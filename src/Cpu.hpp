@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #include <cstdint>
 #define STACK_SIZE 16
 
@@ -27,8 +28,8 @@ namespace chip8 {
                 public:
                     virtual ~IRamdomAccessMemory() {};
 
-                    virtual unsigned char* load(uint16_t addr, size_t n) = 0;
-                    virtual void store(uint16_t addr, unsigned char* data, size_t n) = 0;
+                    virtual std::vector<unsigned char> load(uint16_t addr, size_t n) = 0;
+                    virtual void store(uint16_t addr, const std::vector<unsigned char>& data) = 0;
                     virtual size_t getCapacity() = 0;
             };
     };
