@@ -77,9 +77,10 @@ namespace chip8 {
 
         private:
             IRandomAccessMemory* ram_;
+            Registers regs_;
 
             uint16_t fetch();
-            void decode();
+            void decode(uint16_t code);
             void execute();
     };
 }

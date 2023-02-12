@@ -11,3 +11,9 @@ void Cpu::run() {
         consumeClock();
     }
 }
+
+void Cpu::consumeClock() {
+    uint16_t code = fetch();
+    decode(code);
+    execute();
+}
