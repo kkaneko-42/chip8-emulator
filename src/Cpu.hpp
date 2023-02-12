@@ -26,7 +26,7 @@ namespace chip8 {
 
             class IRandomAccessMemory {
                 public:
-                    virtual ~IRamdomAccessMemory() {};
+                    virtual ~IRandomAccessMemory() {}
 
                     virtual std::vector<unsigned char> load(uint16_t addr, size_t n) = 0;
                     virtual void store(uint16_t addr, const std::vector<unsigned char>& data) = 0;
