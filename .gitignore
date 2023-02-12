@@ -2,3 +2,4 @@ chip8
 *.o
 *.d
 .vscode
+a.out
