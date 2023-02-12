@@ -70,5 +70,16 @@ namespace chip8 {
                 LD_I_Vx             = 0xf055,
                 LD_Vx_I             = 0xf065,
             };
+
+            Cpu(IRandomAccessMemory ram);
+            void run();
+            void consumeClock();
+
+        private:
+            IRandomAccessMemory ram_;
+
+            uint16_t fetch();
+            void decode();
+            void execute();
     };
 }
