@@ -75,6 +75,8 @@ namespace chip8 {
             void run();
             void consumeClock();
 
+            static const size_t kRequireRamSize;
+
         private:
             IRandomAccessMemory* ram_;
             Registers regs_;
