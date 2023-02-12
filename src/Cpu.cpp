@@ -10,6 +10,7 @@ Cpu::Cpu(IRandomAccessMemory* ram) :
 regs_({}),
 ram_(ram),
 kOperationMap({
+    {SYS_ADDR, &Cpu::sysAddr},
     {CLS, &Cpu::cls},
     {RET, &Cpu::ret},
     {JP_ADDR, &Cpu::jpAddr},
@@ -88,6 +89,7 @@ void Cpu::execute(OpeInfo info) {
 
 }
 
+void Cpu::sysAddr(OpeInfo info) {}
 void Cpu::cls(OpeInfo info) {}
 void Cpu::ret(OpeInfo info) {}
 void Cpu::jpAddr(OpeInfo info) {}
