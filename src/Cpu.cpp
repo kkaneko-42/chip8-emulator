@@ -21,3 +21,9 @@ void Cpu::consumeClock() {
     decode(code);
     execute();
 }
+
+uint16_t Cpu::fetch() {
+    auto data = ram_->load(regs_.pc, 1);
+    ++regs_.pc;
+    return data[0];
+}
