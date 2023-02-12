@@ -39,7 +39,6 @@ namespace chip8 {
             };
 
             enum OpeCode {
-                SYS_ADDR            = 0x0000,
                 CLS                 = 0x00e0,
                 RET                 = 0x00ee,
                 JP_ADDR             = 0x1000,
@@ -94,7 +93,6 @@ namespace chip8 {
             OpeInfo decode(uint16_t code);
             void execute(OpeInfo info);
 
-            void sysAddr(OpeInfo info);
             void cls(OpeInfo info);
             void ret(OpeInfo info);
             void jpAddr(OpeInfo info);

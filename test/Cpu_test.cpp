@@ -34,6 +34,7 @@ namespace chip8 {
 
             void testAll() {
                 testFetch();
+                testDecode();
             }
 
             void testFetch() {
@@ -46,6 +47,23 @@ namespace chip8 {
                 
                 res = ins.fetch();
                 assert(res == 3 && ins.regs_.pc == 2);
+            }
+
+            void testDecode() {
+                TestRam ram;
+                Cpu ins = Cpu(&ram);
+
+                auto res = ins.decode(0x00e0);
+                assert(res.opecode == Cpu::OpeCode::CLS);
+
+                res = ins.decode(0x1fff);
+                assert(res.opecode == Cpu::OpeCode::JP_ADDR && res.operand == 0x0fff);
+            
+                res = ins.decode(0x82a3);
+                assert(res.opecode == Cpu::OpeCode::XOR_Vx_Vy && res.operand == 0x02a0);
+            
+                res = ins.decode(0x8be4);
+                assert(res.opecode == Cpu::OpeCode::ADD_Vx_Vy);
             }
     };
 }

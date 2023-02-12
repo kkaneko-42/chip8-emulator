@@ -10,7 +10,6 @@ Cpu::Cpu(IRandomAccessMemory* ram) :
 regs_({}),
 ram_(ram),
 kOperationMap({
-    {SYS_ADDR, &Cpu::sysAddr},
     {CLS, &Cpu::cls},
     {RET, &Cpu::ret},
     {JP_ADDR, &Cpu::jpAddr},
@@ -24,6 +23,7 @@ kOperationMap({
     {OR_Vx_Vy, &Cpu::orVxVy},
     {AND_Vx_Vy, &Cpu::andVxVy},
     {XOR_Vx_Vy, &Cpu::xorVxVy},
+    {ADD_Vx_Vy, &Cpu::addVxVy},
     {SUB_Vx_Vy, &Cpu::subVxVy},
     {SHR_Vx_Vy, &Cpu::shrVxVy},
     {SUBN_Vx_Vy, &Cpu::subnVxVy},
@@ -72,11 +72,11 @@ uint16_t Cpu::fetch() {
 Cpu::OpeInfo Cpu::decode(uint16_t code) {
     OpeInfo info;
 
-    for (const auto& kv : kOperationMap) {
-        OpeCode reserved_opecode = kv.first;
-        if ((code & reserved_opecode) == reserved_opecode) {
-            info.opecode = reserved_opecode;
-            info.operand = (code & ~reserved_opecode);
+    for (auto it = kOperationMap.rbegin(); it != kOperationMap.rend(); ++it) {
+        OpeCode reserved_op = it->first;
+        if ((code & reserved_op) == reserved_op) {
+            info.opecode = reserved_op;
+            info.operand = (code ^ reserved_op);
             return info;
         }
     }
@@ -88,7 +88,6 @@ void Cpu::execute(OpeInfo info) {
 
 }
 
-void Cpu::sysAddr(OpeInfo info) {}
 void Cpu::cls(OpeInfo info) {}
 void Cpu::ret(OpeInfo info) {}
 void Cpu::jpAddr(OpeInfo info) {}
