@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <map>
 #include <cstdint>
 #define STACK_SIZE 16
 
@@ -78,11 +79,55 @@ namespace chip8 {
             static const size_t kRequireRamSize;
 
         private:
-            IRandomAccessMemory* ram_;
-            Registers regs_;
+            struct OpeInfo {
+                OpeCode opecode;
+                uint16_t operand;
+            };
+
+            typedef void (Cpu::*Operation)(OpeInfo);
 
             uint16_t fetch();
-            void decode(uint16_t code);
-            void execute();
+            OpeInfo decode(uint16_t code);
+            void execute(OpeInfo info);
+
+            void sysAddr(OpeInfo info);
+            void cls(OpeInfo info);
+            void ret(OpeInfo info);
+            void jpAddr(OpeInfo info);
+            void callAddr(OpeInfo info);
+            void seVxByte(OpeInfo info);
+            void sneVxByte(OpeInfo info);
+            void seVxVy(OpeInfo info);
+            void ldVxByte(OpeInfo info);
+            void addVxByte(OpeInfo info);
+            void ldVxVy(OpeInfo info);
+            void orVxVy(OpeInfo info);
+            void andVxVy(OpeInfo info);
+            void xorVxVy(OpeInfo info);
+            void addVxVy(OpeInfo info);
+            void subVxVy(OpeInfo info);
+            void shrVxVy(OpeInfo info);
+            void subnVxVy(OpeInfo info);
+            void shlVxVy(OpeInfo info);
+            void sneVxVy(OpeInfo info);
+            void ldIAddr(OpeInfo info);
+            void jpV0Addr(OpeInfo info);
+            void rndVxByte(OpeInfo info);
+            void drwVxVyNibble(OpeInfo info);
+            void skpVx(OpeInfo info);
+            void sknpVx(OpeInfo info);
+            void ldVxDt(OpeInfo info);
+            void ldVxK(OpeInfo info);
+            void ldDtVx(OpeInfo info);
+            void ldStVx(OpeInfo info);
+            void addIVx(OpeInfo info);
+            void ldFVx(OpeInfo info);
+            void ldBVx(OpeInfo info);
+            void ldIVx(OpeInfo info);
+            void ldVxI(OpeInfo info);
+
+            const std::map<OpeCode, Operation> kOperationMap;
+            IRandomAccessMemory* ram_;
+            Registers regs_;
     };
 }
