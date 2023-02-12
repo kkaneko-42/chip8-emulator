@@ -86,7 +86,10 @@ Cpu::OpeInfo Cpu::decode(uint16_t code) {
 }
 
 void Cpu::execute(OpeInfo info) {
-
+    auto found = kOperationMap.find(info.opecode);
+    if (found != kOperationMap.end()) {
+        (this->*found->second)(info);
+    }
 }
 
 void Cpu::sysAddr(OpeInfo info) {}
