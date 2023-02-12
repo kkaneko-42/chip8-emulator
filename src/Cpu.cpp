@@ -7,6 +7,7 @@ using namespace chip8;
 const size_t Cpu::kRequireRamSize = 4096;
 
 Cpu::Cpu(IRandomAccessMemory* ram) :
+regs_({}),
 ram_(ram),
 kOperationMap({
     {SYS_ADDR, &Cpu::sysAddr},
@@ -81,6 +82,10 @@ Cpu::OpeInfo Cpu::decode(uint16_t code) {
     }
 
     throw std::runtime_error("invalid opecode");
+}
+
+void Cpu::execute(OpeInfo info) {
+
 }
 
 void Cpu::sysAddr(OpeInfo info) {}
