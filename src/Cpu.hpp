@@ -32,5 +32,43 @@ namespace chip8 {
                     virtual void store(uint16_t addr, const std::vector<unsigned char>& data) = 0;
                     virtual size_t getCapacity() = 0;
             };
+
+            enum OpeCode {
+                SYS_ADDR            = 0x0000,
+                CLS                 = 0x00e0,
+                RET                 = 0x00ee,
+                JP_ADDR             = 0x1000,
+                CALL_ADDR           = 0x2000,
+                SE_Vx_BYTE          = 0x3000,
+                SNE_Vx_BYTE         = 0x4000,
+                SE_Vx_Vy            = 0x5000,
+                LD_Vx_BYTE          = 0x6000,
+                ADD_Vx_BYTE         = 0x7000,
+                LD_Vx_Vy            = 0x8000,
+                OR_Vx_Vy            = 0x8001,
+                AND_Vx_Vy           = 0x8002,
+                XOR_Vx_Vy           = 0x8003,
+                ADD_Vx_Vy           = 0x8004,
+                SUB_Vx_Vy           = 0x8005,
+                SHR_Vx_Vy           = 0x8006,
+                SUBN_Vx_Vy          = 0x8007,
+                SHL_Vx_Vy           = 0x800e,
+                SNE_Vx_Vy           = 0x9000,
+                LD_I_ADDR           = 0xa000,
+                JP_V0_ADDR          = 0xb000,
+                RND_Vx_BYTE         = 0xc000,
+                DRW_Vx_Vy_NIBBLE    = 0xd000,
+                SKP_Vx              = 0xe09e,
+                SKNP_Vx             = 0xe0a1,
+                LD_Vx_DT            = 0xf007,
+                LD_Vx_K             = 0xf00a,
+                LD_DT_Vx            = 0xf015,
+                LD_ST_Vx            = 0xf018,
+                ADD_I_Vx            = 0xf01e,
+                LD_F_Vx             = 0xf029,
+                LD_B_Vx             = 0xf033,
+                LD_I_Vx             = 0xf055,
+                LD_Vx_I             = 0xf065,
+            };
     };
 }
