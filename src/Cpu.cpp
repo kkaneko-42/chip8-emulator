@@ -125,7 +125,12 @@ void Cpu::shrVxVy(OpeInfo info) {}
 void Cpu::subnVxVy(OpeInfo info) {}
 void Cpu::shlVxVy(OpeInfo info) {}
 void Cpu::sneVxVy(OpeInfo info) {}
-void Cpu::ldIAddr(OpeInfo info) {}
+
+void Cpu::ldIAddr(OpeInfo info) {
+    uint16_t addr = (info.operand & 0x0fff);
+    regs_.i = addr;
+}
+
 void Cpu::jpV0Addr(OpeInfo info) {}
 void Cpu::rndVxByte(OpeInfo info) {}
 void Cpu::drwVxVyNibble(OpeInfo info) {}

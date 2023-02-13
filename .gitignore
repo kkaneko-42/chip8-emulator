@@ -3,3 +3,4 @@ chip8
 *.d
 .vscode
 a.out
+cpu-test

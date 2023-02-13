@@ -40,6 +40,7 @@ namespace chip8 {
                 testLdVxDt();
                 testLdDtVx();
                 testLdStVx();
+                testLdIAddr();
 
                 std::cout << "OK" << std::endl;
             }
@@ -168,6 +169,23 @@ namespace chip8 {
                 info.operand = 0x0f00;
                 ins.execute(info);
                 assert(ins.regs_.sound_timer == 0);
+            }
+    
+            void testLdIAddr() {
+                TestRam ram;
+                Cpu ins = Cpu(&ram);
+
+                Cpu::OpeInfo info = {Cpu::OpeCode::LD_I_ADDR, 0x0fff};
+                ins.execute(info);
+                assert(ins.regs_.i == 0x0fff);
+
+                info.operand = 0x0000;
+                ins.execute(info);
+                assert(ins.regs_.i == 0x0000);
+
+                info.operand = 0x0042;
+                ins.execute(info);
+                assert(ins.regs_.i == 0x0042);
             }
     };
 }
