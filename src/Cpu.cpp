@@ -20,7 +20,7 @@ kOperationMap({
     {SE_Vx_Vy, &Cpu::seVxVy},
     {LD_Vx_BYTE, &Cpu::ldVxByte},
     {ADD_Vx_BYTE, &Cpu::addVxByte},
-    {LD_Vx_Vy, &Cpu::addVxVy},
+    {LD_Vx_Vy, &Cpu::ldVxVy},
     {OR_Vx_Vy, &Cpu::orVxVy},
     {AND_Vx_Vy, &Cpu::andVxVy},
     {XOR_Vx_Vy, &Cpu::xorVxVy},
@@ -115,7 +115,14 @@ void Cpu::sneVxByte(OpeInfo info) {}
 void Cpu::seVxVy(OpeInfo info) {}
 void Cpu::ldVxByte(OpeInfo info) {}
 void Cpu::addVxByte(OpeInfo info) {}
-void Cpu::ldVxVy(OpeInfo info) {}
+
+void Cpu::ldVxVy(OpeInfo info) {
+    uint16_t x_idx = ((info.operand & 0x0f00) >> 8);
+    uint16_t y_idx = ((info.operand & 0x00f0) >> 4);
+
+    regs_.v[x_idx] = regs_.v[y_idx];
+}
+
 void Cpu::orVxVy(OpeInfo info) {}
 void Cpu::andVxVy(OpeInfo info) {}
 void Cpu::xorVxVy(OpeInfo info) {}

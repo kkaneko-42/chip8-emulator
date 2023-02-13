@@ -41,6 +41,7 @@ namespace chip8 {
                 testLdDtVx();
                 testLdStVx();
                 testLdIAddr();
+                testLdVxVy();
 
                 std::cout << "OK" << std::endl;
             }
@@ -186,6 +187,22 @@ namespace chip8 {
                 info.operand = 0x0042;
                 ins.execute(info);
                 assert(ins.regs_.i == 0x0042);
+            }
+    
+            void testLdVxVy() {
+                TestRam ram;
+                Cpu ins = Cpu(&ram);
+
+                ins.regs_.v[0] = 0;
+                ins.regs_.v[0xf] = 42;
+                Cpu::OpeInfo info = {Cpu::OpeCode::LD_Vx_Vy, 0x00f0};
+                ins.execute(info);
+                assert(ins.regs_.v[0] == 42);
+
+                ins.regs_.v[1] = UINT8_MAX;
+                info.operand = 0x0010;
+                ins.execute(info);
+                assert(ins.regs_.v[0] == UINT8_MAX);
             }
     };
 }
