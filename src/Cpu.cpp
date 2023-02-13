@@ -171,5 +171,16 @@ void Cpu::ldStVx(OpeInfo info) {
 void Cpu::addIVx(OpeInfo info) {}
 void Cpu::ldFVx(OpeInfo info) {}
 void Cpu::ldBVx(OpeInfo info) {}
-void Cpu::ldIVx(OpeInfo info) {}
+
+void Cpu::ldIVx(OpeInfo info) {
+    uint16_t reg_end = (info.operand >> 8);
+
+    std::vector<uint16_t> data(reg_end + 1);
+    for (uint16_t i = 0; i <= reg_end; ++i) {
+        data[i] = regs_.v[i];
+    }
+
+    ram_->store(regs_.i, data);
+}
+
 void Cpu::ldVxI(OpeInfo info) {}

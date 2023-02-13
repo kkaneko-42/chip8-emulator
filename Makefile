@@ -1,5 +1,5 @@
 CXX			:= c++
-CXXFLAGS	:= #-Wall -Wextra -Werror
+CXXFLAGS	:= -fsanitize=address -fsanitize=undefined -g #-Wall -Wextra -Werror
 SRCS_DIR	:= src
 TESTS_DIR	:= test
 

@@ -1,5 +1,7 @@
 #include "../src/Cpu.hpp"
 #include <cassert>
+#include <cstdlib>
+#include <ctime>
 #include <iostream>
 
 using namespace chip8;
@@ -28,9 +30,12 @@ namespace chip8 {
                         data_.resize(4096);
                     }
 
-                private:
                     std::vector<uint16_t> data_; 
             };
+
+            Cpu_test() {
+                std::srand(time(nullptr));
+            }
 
             void testAll() {
                 testFetch();
@@ -43,6 +48,7 @@ namespace chip8 {
                 testLdIAddr();
                 testLdVxVy();
                 testLdVxByte();
+                testLdIVx();
 
                 std::cout << "OK" << std::endl;
             }
@@ -221,6 +227,27 @@ namespace chip8 {
                 info.operand = 0x0042;
                 ins.execute(info);
                 assert(ins.regs_.v[0] == 0x42);
+            }
+    
+            void testLdIVx() {
+                TestRam ram;
+                Cpu ins = Cpu(&ram);
+
+                for (size_t i = 0; i < 8; ++i) {
+                    ins.regs_.v[i] = static_cast<uint8_t>(std::rand());
+                }
+
+                Cpu::OpeInfo info = {Cpu::OpeCode::LD_I_Vx, 0x0700};
+                ins.execute(info);
+                for (size_t i = 0; i < 8; ++i) {
+                    assert(ram.data_[i] == ins.regs_.v[i]);
+                }
+
+                ins.regs_.i = 42;
+                ins.execute(info);
+                for (size_t i = 42; i < 42 + 8; ++i) {
+                    assert(ram.data_[i] == ins.regs_.v[i - 42]);
+                }
             }
     };
 }
