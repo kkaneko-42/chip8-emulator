@@ -36,6 +36,7 @@ namespace chip8 {
                 testFetch();
                 testDecode();
                 testRetCall();
+                testJp();
             }
 
             void testFetch() {
@@ -85,6 +86,23 @@ namespace chip8 {
 
                 ins.execute(info);
                 assert(ins.regs_.pc == 0 && ins.regs_.sp == UINT8_MAX);
+            }
+
+            void testJp() {
+                TestRam ram;
+                Cpu ins = Cpu(&ram);
+
+                Cpu::OpeInfo info = {Cpu::OpeCode::JP_ADDR, 100};
+                ins.execute(info);
+                assert(ins.regs_.pc == 100);
+
+                info.operand = 0x0fff;
+                ins.execute(info);
+                assert(ins.regs_.pc == 0x0fff);
+
+                info.operand = 0;
+                ins.execute(info);
+                assert(ins.regs_.pc == 0);
             }
     };
 }

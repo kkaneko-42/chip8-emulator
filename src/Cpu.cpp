@@ -99,7 +99,10 @@ void Cpu::ret(OpeInfo info) {
     regs_.pc = regs_.stack[regs_.sp--];
 }
 
-void Cpu::jpAddr(OpeInfo info) {}
+void Cpu::jpAddr(OpeInfo info) {
+    uint16_t dst_addr = (info.operand & 0x0fff);
+    regs_.pc = dst_addr;
+}
 
 void Cpu::callAddr(OpeInfo info) {
     // TODO: stack pointer validation
