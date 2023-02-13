@@ -144,7 +144,11 @@ void Cpu::ldDtVx(OpeInfo info) {
     regs_.delay_timer = regs_.v[reg_idx];
 }
 
-void Cpu::ldStVx(OpeInfo info) {}
+void Cpu::ldStVx(OpeInfo info) {
+    uint16_t reg_idx = (info.operand >> 8);
+    regs_.sound_timer = regs_.v[reg_idx];
+}
+
 void Cpu::addIVx(OpeInfo info) {}
 void Cpu::ldFVx(OpeInfo info) {}
 void Cpu::ldBVx(OpeInfo info) {}
