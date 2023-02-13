@@ -7,7 +7,7 @@ using namespace chip8;
 const size_t Cpu::kRequireRamSize = 4096;
 
 Cpu::Cpu(IRandomAccessMemory* ram) :
-regs_({}),
+regs_({.sp {UINT8_MAX}}),
 ram_(ram),
 kOperationMap({
     {SYS_ADDR, &Cpu::sysAddr},
@@ -65,8 +65,7 @@ void Cpu::consumeClock() {
 }
 
 uint16_t Cpu::fetch() {
-    auto data = ram_->load(regs_.pc, 1);
-    ++regs_.pc;
+    auto data = ram_->load(regs_.pc++, 1);
     return data[0];
 }
 
@@ -94,9 +93,20 @@ void Cpu::execute(OpeInfo info) {
 
 void Cpu::sysAddr(OpeInfo info) {}
 void Cpu::cls(OpeInfo info) {}
-void Cpu::ret(OpeInfo info) {}
+
+void Cpu::ret(OpeInfo info) {
+    // TODO: stack pointer validation
+    regs_.pc = regs_.stack[regs_.sp--];
+}
+
 void Cpu::jpAddr(OpeInfo info) {}
-void Cpu::callAddr(OpeInfo info) {}
+
+void Cpu::callAddr(OpeInfo info) {
+    // TODO: stack pointer validation
+    regs_.stack[++regs_.sp] = regs_.pc;
+    regs_.pc = (info.operand & 0x0fff);
+}
+
 void Cpu::seVxByte(OpeInfo info) {}
 void Cpu::sneVxByte(OpeInfo info) {}
 void Cpu::seVxVy(OpeInfo info) {}

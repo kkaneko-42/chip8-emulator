@@ -35,6 +35,7 @@ namespace chip8 {
             void testAll() {
                 testFetch();
                 testDecode();
+                testRetCall();
             }
 
             void testFetch() {
@@ -64,6 +65,26 @@ namespace chip8 {
             
                 res = ins.decode(0x8be4);
                 assert(res.opecode == Cpu::OpeCode::ADD_Vx_Vy);
+            }
+
+            void testRetCall() {
+                TestRam ram;
+                Cpu ins = Cpu(&ram);
+
+                Cpu::OpeInfo info = {Cpu::OpeCode::CALL_ADDR, 64};
+                ins.execute(info);
+                assert(ins.regs_.pc == 64 && ins.regs_.stack[0] == 0 && ins.regs_.sp == 0);
+
+                info = {Cpu::OpeCode::CALL_ADDR, 100};
+                ins.execute(info);
+                assert(ins.regs_.pc == 100 && ins.regs_.stack[1] == 64 && ins.regs_.sp == 1);
+
+                info = {Cpu::OpeCode::RET};
+                ins.execute(info);
+                assert(ins.regs_.pc == 64 && ins.regs_.sp == 0);
+
+                ins.execute(info);
+                assert(ins.regs_.pc == 0 && ins.regs_.sp == UINT8_MAX);
             }
     };
 }
