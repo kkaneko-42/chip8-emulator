@@ -37,6 +37,10 @@ namespace chip8 {
                 testDecode();
                 testRetCall();
                 testJp();
+                testLdVxDt();
+                testLdDtVx();
+
+                std::cout << "OK" << std::endl;
             }
 
             void testFetch() {
@@ -103,6 +107,46 @@ namespace chip8 {
                 info.operand = 0;
                 ins.execute(info);
                 assert(ins.regs_.pc == 0);
+            }
+
+            void testLdVxDt() {
+                TestRam ram;
+                Cpu ins = Cpu(&ram);
+
+                ins.regs_.delay_timer = 100;
+                Cpu::OpeInfo info = {Cpu::OpeCode::LD_Vx_DT, 0x0a00};
+                ins.execute(info);
+                assert(ins.regs_.v[0xa] == 100);
+
+                ins.regs_.delay_timer = UINT8_MAX;
+                info.operand = 0x0000;
+                ins.execute(info);
+                assert(ins.regs_.v[0x0] == UINT8_MAX);
+
+                ins.regs_.delay_timer = 0;
+                info.operand = 0x0f00;
+                ins.execute(info);
+                assert(ins.regs_.v[0xf] == 0);
+            }
+    
+            void testLdDtVx() {
+                TestRam ram;
+                Cpu ins = Cpu(&ram);
+
+                ins.regs_.v[0xa] = 100;
+                Cpu::OpeInfo info = {Cpu::OpeCode::LD_DT_Vx, 0x0a00};
+                ins.execute(info);
+                assert(ins.regs_.delay_timer == 100);
+
+                ins.regs_.v[0] = UINT8_MAX;
+                info.operand = 0x0000;
+                ins.execute(info);
+                assert(ins.regs_.delay_timer == UINT8_MAX);
+
+                ins.regs_.v[0xf] = 0;
+                info.operand = 0x0f00;
+                ins.execute(info);
+                assert(ins.regs_.delay_timer == 0);
             }
     };
 }

@@ -14,7 +14,7 @@ namespace chip8 {
 
             struct Registers {
                 // 一般的な用途のレジスタ
-                uint8_t v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, va, vb, vc, vd, ve, vf;
+                uint8_t v[16];
                 // メモリアドレスを格納するレジスタ
                 // NOTE: 通常、下位12bitのみ使われる
                 uint16_t i;

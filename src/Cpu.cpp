@@ -131,9 +131,19 @@ void Cpu::rndVxByte(OpeInfo info) {}
 void Cpu::drwVxVyNibble(OpeInfo info) {}
 void Cpu::skpVx(OpeInfo info) {}
 void Cpu::sknpVx(OpeInfo info) {}
-void Cpu::ldVxDt(OpeInfo info) {}
+
+void Cpu::ldVxDt(OpeInfo info) {
+    uint16_t reg_idx = (info.operand >> 8);
+    regs_.v[reg_idx] = regs_.delay_timer;
+}
+
 void Cpu::ldVxK(OpeInfo info) {}
-void Cpu::ldDtVx(OpeInfo info) {}
+
+void Cpu::ldDtVx(OpeInfo info) {
+    uint16_t reg_idx = (info.operand >> 8);
+    regs_.delay_timer = regs_.v[reg_idx];
+}
+
 void Cpu::ldStVx(OpeInfo info) {}
 void Cpu::addIVx(OpeInfo info) {}
 void Cpu::ldFVx(OpeInfo info) {}
