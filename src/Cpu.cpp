@@ -113,7 +113,14 @@ void Cpu::callAddr(OpeInfo info) {
 void Cpu::seVxByte(OpeInfo info) {}
 void Cpu::sneVxByte(OpeInfo info) {}
 void Cpu::seVxVy(OpeInfo info) {}
-void Cpu::ldVxByte(OpeInfo info) {}
+
+void Cpu::ldVxByte(OpeInfo info) {
+    uint16_t reg_idx = (info.operand & 0x0f00) >> 8;
+    uint8_t imm = (info.operand & 0x00ff);
+
+    regs_.v[reg_idx] = imm;
+}
+
 void Cpu::addVxByte(OpeInfo info) {}
 
 void Cpu::ldVxVy(OpeInfo info) {
