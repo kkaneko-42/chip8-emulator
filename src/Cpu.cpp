@@ -95,7 +95,10 @@ void Cpu::execute(OpeInfo info) {
     }
 }
 
-void Cpu::sysAddr(OpeInfo info) {}
+void Cpu::sysAddr(OpeInfo info) {
+    throw std::runtime_error("SYS addr is not implemented");
+}
+
 void Cpu::cls(OpeInfo info) {}
 
 void Cpu::ret(OpeInfo info) {
