@@ -27,6 +27,12 @@ namespace chip8 {
                 uint8_t sp;
                 // NOTE: STACK_SIZEは、入れ子にできるルーチンの数(深さ)
                 uint16_t stack[STACK_SIZE];
+
+                Registers() :
+                v(), i(),
+                delay_timer(), sound_timer(),
+                pc(), sp(UINT8_MAX),
+                stack() {}
             };
 
             class IRandomAccessMemory {
@@ -86,10 +92,14 @@ namespace chip8 {
             };
 
             Cpu(IRandomAccessMemory* ram);
+            Cpu(IRandomAccessMemory* ram, IDisplay* display);
             void run();
             void consumeClock();
+            void setRam(IRandomAccessMemory* ram);
+            void setDisplay(IDisplay* display);
 
             static const size_t kRequireRamSize;
+            static const size_t kRequireDisplayWidth, kRequireDisplayHeight;
 
         private:
             struct OpeInfo {
@@ -139,8 +149,9 @@ namespace chip8 {
             void ldIVx(OpeInfo info);
             void ldVxI(OpeInfo info);
 
-            const std::map<OpeCode, Operation> kOperationMap;
+            static const std::map<OpeCode, Operation> kOperationMap;
             IRandomAccessMemory* ram_;
+            IDisplay* display_;
             Registers regs_;
     };
 }

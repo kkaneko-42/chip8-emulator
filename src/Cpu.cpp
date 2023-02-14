@@ -6,11 +6,9 @@
 using namespace chip8;
 
 const size_t Cpu::kRequireRamSize = 4096;
-
-Cpu::Cpu(IRandomAccessMemory* ram) :
-regs_({.sp {UINT8_MAX}}),
-ram_(ram),
-kOperationMap({
+const size_t Cpu::kRequireDisplayWidth = 64;
+const size_t Cpu::kRequireDisplayHeight = 32;
+const std::map<Cpu::OpeCode, Cpu::Operation> Cpu::kOperationMap = {
     {SYS_ADDR, &Cpu::sysAddr},
     {CLS, &Cpu::cls},
     {RET, &Cpu::ret},
@@ -46,11 +44,38 @@ kOperationMap({
     {LD_B_Vx, &Cpu::ldBVx},
     {LD_I_Vx, &Cpu::ldIVx},
     {LD_Vx_I, &Cpu::ldVxI}
-})
-{
-    if (ram_->getCapacity() < kRequireRamSize) {
+};
+
+Cpu::Cpu(IRandomAccessMemory* ram) {
+    setRam(ram);
+}
+
+Cpu::Cpu(IRandomAccessMemory* ram, IDisplay* display) {
+    setRam(ram);
+    setDisplay(display);
+}
+
+void Cpu::setRam(IRandomAccessMemory* ram) {
+    if (ram == nullptr) {
+        throw std::runtime_error("RAM is null");
+    } else if (ram->getCapacity() < kRequireRamSize) {
         throw std::runtime_error("RAM size is not enough");
     }
+
+    ram_ = ram;
+}
+
+void Cpu::setDisplay(IDisplay* display) {
+    if (display == nullptr) {
+        throw std::runtime_error("Display is null");
+    }
+    size_t x = 0, y = 0;
+    display->getResolution(x, y);
+    if (x < kRequireDisplayWidth || y < kRequireDisplayHeight) {
+        throw std::runtime_error("Display is not satisfy the requirement");
+    }
+
+    display_ = display;
 }
 
 void Cpu::run() {
@@ -252,7 +277,19 @@ void Cpu::rndVxByte(OpeInfo info) {
     regs_.v[reg_idx] = (rnd() & imm);
 }
 
-void Cpu::drwVxVyNibble(OpeInfo info) {}
+void Cpu::drwVxVyNibble(OpeInfo info) {
+    uint16_t x_idx  = (info.operand >> 8);
+    uint16_t y_idx  = (info.operand >> 4) & 0x000f;
+    uint16_t n_byte = (info.operand & 0x000f);
+
+    auto sprite = ram_->load(regs_.i, n_byte);
+    bool collision = display_->renderSprite(
+        regs_.v[x_idx], regs_.v[y_idx],
+        sprite
+    );
+    regs_.v[0xf] = (collision) ? 1 : 0;
+}
+
 void Cpu::skpVx(OpeInfo info) {}
 void Cpu::sknpVx(OpeInfo info) {}
 
