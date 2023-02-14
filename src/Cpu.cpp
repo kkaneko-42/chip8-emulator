@@ -152,7 +152,12 @@ void Cpu::andVxVy(OpeInfo info) {
     regs_.v[x_idx] &= regs_.v[y_idx];
 }
 
-void Cpu::xorVxVy(OpeInfo info) {}
+void Cpu::xorVxVy(OpeInfo info) {
+    uint16_t x_idx = (info.operand >> 8);
+    uint16_t y_idx = (info.operand >> 4) & 0x000f;
+
+    regs_.v[x_idx] ^= regs_.v[y_idx];
+}
 
 void Cpu::addVxVy(OpeInfo info) {
     uint16_t x_idx = (info.operand >> 8);
