@@ -36,24 +36,6 @@ namespace chip8 {
                 stack() {}
             };
 
-            class IRandomAccessMemory {
-                public:
-                    virtual ~IRandomAccessMemory() {}
-
-                    virtual std::vector<unsigned char> load(uint16_t addr, size_t n) = 0;
-                    virtual void store(uint16_t addr, const std::vector<unsigned char>& data) = 0;
-                    virtual size_t getCapacity() = 0;
-            };
-
-            class IDisplay {
-                public:
-                    virtual ~IDisplay() {}
-
-                    virtual bool renderSprite(size_t x, size_t y, const std::vector<unsigned char>& sprite) = 0;
-                    virtual void clear() = 0;
-                    virtual void getResolution(size_t& x, size_t& y) = 0;
-            };
-
             enum OpeCode {
                 SYS_ADDR            = 0x0000,
                 CLS                 = 0x00e0,
@@ -90,6 +72,50 @@ namespace chip8 {
                 LD_B_Vx             = 0xf033,
                 LD_I_Vx             = 0xf055,
                 LD_Vx_I             = 0xf065,
+            };
+
+            enum KeyCode {
+                KEY_0,
+                KEY_1,
+                KEY_2,
+                KEY_3,
+                KEY_4,
+                KEY_5,
+                KEY_6,
+                KEY_7,
+                KEY_8,
+                KEY_9,
+                KEY_A,
+                KEY_B,
+                KEY_C,
+                KEY_D,
+                KEY_E,
+                KEY_F,
+            };
+
+            class IRandomAccessMemory {
+                public:
+                    virtual ~IRandomAccessMemory() {}
+
+                    virtual std::vector<unsigned char> load(uint16_t addr, size_t n) = 0;
+                    virtual void store(uint16_t addr, const std::vector<unsigned char>& data) = 0;
+                    virtual size_t getCapacity() = 0;
+            };
+
+            class IDisplay {
+                public:
+                    virtual ~IDisplay() {}
+
+                    virtual bool renderSprite(size_t x, size_t y, const std::vector<unsigned char>& sprite) = 0;
+                    virtual void clear() = 0;
+                    virtual void getResolution(size_t& x, size_t& y) = 0;
+            };
+
+            class IKeyboard {
+                public:
+                    virtual ~IKeyboard() {}
+
+                    virtual bool isPressing(KeyCode keycode) = 0;
             };
 
             Cpu(IRandomAccessMemory* ram);
