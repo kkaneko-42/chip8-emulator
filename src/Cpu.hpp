@@ -38,6 +38,14 @@ namespace chip8 {
                     virtual size_t getCapacity() = 0;
             };
 
+            class IDisplay {
+                public:
+                    virtual ~IDisplay() {}
+
+                    virtual void renderSprite(size_t x, size_t y, const std::vector<unsigned char>& sprite) = 0;
+                    virtual void getResolution(size_t& x, size_t& y) = 0;
+            };
+
             enum OpeCode {
                 SYS_ADDR            = 0x0000,
                 CLS                 = 0x00e0,
