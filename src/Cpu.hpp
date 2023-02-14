@@ -10,6 +10,7 @@ namespace chip8 {
         public:
             #ifdef TEST
             friend class Cpu_test;
+            friend class IntegrationTester;
             #endif
 
             struct Registers {

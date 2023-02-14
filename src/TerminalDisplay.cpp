@@ -14,16 +14,17 @@ TerminalDisplay::~TerminalDisplay() {
     endwin();
 }
 
+#include <iostream>
 bool TerminalDisplay::renderSprite(size_t x, size_t y, const std::vector<unsigned char>& sprite) {
     bool collision = false;
 
     for (const auto& sprite_row : sprite) {
-        auto row_bits = std::bitset<WIDTH>(sprite_row);
+        auto row_bits = std::bitset<WIDTH>(sprite_row) << (WIDTH - x - CHAR_BIT);
 
-        if ((frame_buffer_[y] & row_bits) == 0) {
+        if ((frame_buffer_[y] & row_bits) != 0) {
             collision = true;
         }
-        frame_buffer_[y] ^= row_bits << (WIDTH - x - CHAR_BIT);
+        frame_buffer_[y] ^= row_bits;
         ++y;
     }
     render();
