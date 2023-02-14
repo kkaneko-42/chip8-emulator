@@ -65,9 +65,9 @@ void Cpu::consumeClock() {
 }
 
 uint16_t Cpu::fetch() {
-    auto data = ram_->load(regs_.pc * 2, 2);
+    auto data = ram_->load(regs_.pc, 2);
     uint16_t code = (data[0] << 8) | data[1];
-    ++regs_.pc;
+    regs_.pc += 2;
 
     return code;
 }
@@ -113,7 +113,15 @@ void Cpu::callAddr(OpeInfo info) {
     regs_.pc = (info.operand & 0x0fff);
 }
 
-void Cpu::seVxByte(OpeInfo info) {}
+void Cpu::seVxByte(OpeInfo info) {
+    uint16_t reg_idx = (info.operand >> 8);
+    uint16_t imm = (info.operand & 0x00ff);
+
+    if (regs_.v[reg_idx] == imm) {
+        regs_.pc += 2;
+    }
+}
+
 void Cpu::sneVxByte(OpeInfo info) {}
 void Cpu::seVxVy(OpeInfo info) {}
 
