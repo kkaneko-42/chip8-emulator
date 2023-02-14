@@ -36,6 +36,7 @@ namespace chip8 {
         public:
             void testAll() {
                 testDrwVxVyNibble();
+                testCls();
             }
 
             void testDrwVxVyNibble() {
@@ -62,6 +63,22 @@ namespace chip8 {
                 ins.regs_.v[0xb] = Cpu::kRequireDisplayHeight - 5; // sprite height
                 ins.execute(info);
                 assert(ins.regs_.v[0xf] == 0);
+                sleep(1);
+            }
+    
+            void testCls() {
+                TestRam ram;
+                TerminalDisplay display;
+                Cpu ins = Cpu(&ram, &display);
+                std::vector<unsigned char> fill_sprite(Cpu::kRequireDisplayHeight, 0xff);
+                
+                for (size_t x = 0; x < Cpu::kRequireDisplayWidth; x += CHAR_BIT) {
+                    display.renderSprite(x, 0, fill_sprite);
+                }
+                sleep(1);
+
+                Cpu::OpeInfo info = {Cpu::OpeCode::CLS, 0x0000};
+                ins.execute(info);
                 sleep(1);
             }
     };
