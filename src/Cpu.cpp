@@ -124,7 +124,12 @@ void Cpu::ldVxByte(OpeInfo info) {
     regs_.v[reg_idx] = imm;
 }
 
-void Cpu::addVxByte(OpeInfo info) {}
+void Cpu::addVxByte(OpeInfo info) {
+    uint16_t reg_idx = (info.operand >> 8);
+    uint16_t imm = (info.operand & 0x00ff);
+
+    regs_.v[reg_idx] += static_cast<uint8_t>(imm);
+}
 
 void Cpu::ldVxVy(OpeInfo info) {
     uint16_t x_idx = ((info.operand & 0x0f00) >> 8);

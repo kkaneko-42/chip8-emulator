@@ -53,6 +53,7 @@ namespace chip8 {
                 testLdVxI();
                 testAddIVx();
                 testAddVxVy();
+                testAddVxByte();
 
                 std::cout << "OK" << std::endl;
             }
@@ -312,6 +313,19 @@ namespace chip8 {
                 expect += 42;
                 assert(ins.regs_.v[0] = expect);
                 assert(ins.regs_.v[0xf] == 0);
+            }
+    
+            void testAddVxByte() {
+                TestRam ram;
+                Cpu ins = Cpu(&ram);
+
+                Cpu::OpeInfo info = {Cpu::OpeCode::ADD_Vx_BYTE, 0x00ff};
+                ins.execute(info);
+                assert(ins.regs_.v[0] == 0xff);
+
+                info.operand = 0x0a42;
+                ins.execute(info);
+                assert(ins.regs_.v[0xa] == 0x42);
             }
     };
 }
