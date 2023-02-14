@@ -54,6 +54,7 @@ namespace chip8 {
                 testAddIVx();
                 testAddVxVy();
                 testAddVxByte();
+                testOrVxVy();
 
                 std::cout << "OK" << std::endl;
             }
@@ -326,6 +327,23 @@ namespace chip8 {
                 info.operand = 0x0a42;
                 ins.execute(info);
                 assert(ins.regs_.v[0xa] == 0x42);
+            }
+    
+            void testOrVxVy() {
+                TestRam ram;
+                Cpu ins = Cpu(&ram);
+                Cpu::OpeInfo info = {Cpu::OpeCode::OR_Vx_Vy, 0x0010};
+                uint8_t a = std::rand(), b = std::rand();
+
+                ins.regs_.v[0] = a;
+                ins.regs_.v[1] = b;
+                ins.execute(info);
+                assert(ins.regs_.v[0] == (a | b));
+
+                a = ins.regs_.v[0];
+                ins.regs_.v[1] = b = std::rand();
+                ins.execute(info);
+                assert(ins.regs_.v[0] == (a | b));
             }
     };
 }
