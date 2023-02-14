@@ -131,7 +131,14 @@ void Cpu::sneVxByte(OpeInfo info) {
     }
 }
 
-void Cpu::seVxVy(OpeInfo info) {}
+void Cpu::seVxVy(OpeInfo info) {
+    uint16_t x_idx = (info.operand >> 8);
+    uint16_t y_idx = (info.operand >> 4) & 0x000f;
+
+    if (regs_.v[x_idx] == regs_.v[y_idx]) {
+        regs_.pc += 2;
+    }
+}
 
 void Cpu::ldVxByte(OpeInfo info) {
     uint16_t reg_idx = (info.operand & 0x0f00) >> 8;
