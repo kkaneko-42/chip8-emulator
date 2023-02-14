@@ -65,9 +65,9 @@ void Cpu::consumeClock() {
 }
 
 uint16_t Cpu::fetch() {
-    auto data = ram_->load(regs_.pc, 2);
+    auto data = ram_->load(regs_.pc * 2, 2);
     uint16_t code = (data[0] << 8) | data[1];
-    regs_.pc += 2;
+    ++regs_.pc;
 
     return code;
 }
