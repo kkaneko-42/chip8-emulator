@@ -4,3 +4,4 @@ chip8
 .vscode
 a.out
 cpu-test
+display-test
