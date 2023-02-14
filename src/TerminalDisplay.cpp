@@ -1,9 +1,10 @@
 #include "TerminalDisplay.hpp"
+#include <climits>
 
 using namespace chip8;
 
-const size_t TerminalDisplay::kWidth = 64;
-const size_t TerminalDisplay::kHeight = 32;
+const char TerminalDisplay::kPlotChar = '*';
+const char TerminalDisplay::kEmptyChar = ' ';
 
 TerminalDisplay::TerminalDisplay() {
     initscr();
@@ -17,16 +18,32 @@ bool TerminalDisplay::renderSprite(size_t x, size_t y, const std::vector<unsigne
     bool collision = false;
 
     for (const auto& sprite_row : sprite) {
-        if ((frame_buffer_[y] & sprite_row) == 0) {
+        auto row_bits = std::bitset<WIDTH>(sprite_row);
+
+        if ((frame_buffer_[y] & row_bits) == 0) {
             collision = true;
         }
-        frame_buffer_[y] ^= static_cast<uint64_t>(sprite_row) >> x;
+        frame_buffer_[y] ^= row_bits << (WIDTH - x - CHAR_BIT);
         ++y;
     }
+    render();
 
     return collision;
 }
 
 void TerminalDisplay::clear() {
     erase();
+    refresh();
+}
+
+#include <iostream>
+
+void TerminalDisplay::render() {
+    for (size_t y = 0; y < HEIGHT; ++y) {
+        for (size_t x = 0; x < WIDTH; ++x) {
+            char c = (frame_buffer_[y][WIDTH - x - 1] == 1) ? kPlotChar : kEmptyChar;
+            mvaddch(y, x, c);
+        }
+    }
+    refresh();
 }
