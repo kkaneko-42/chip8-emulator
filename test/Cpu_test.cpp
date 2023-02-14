@@ -2,6 +2,7 @@
 #include <cassert>
 #include <cstdlib>
 #include <ctime>
+#include <climits>
 #include <iostream>
 
 using namespace chip8;
@@ -51,6 +52,7 @@ namespace chip8 {
                 testLdIVx();
                 testLdVxI();
                 testAddIVx();
+                testAddVxVy();
 
                 std::cout << "OK" << std::endl;
             }
@@ -289,6 +291,27 @@ namespace chip8 {
                 info.operand = 0x0f00;
                 ins.execute(info);
                 assert(ins.regs_.i = 42 + 13);
+            }
+    
+            void testAddVxVy() {
+                TestRam ram;
+                Cpu ins = Cpu(&ram);
+
+                Cpu::OpeInfo info = {Cpu::OpeCode::ADD_Vx_Vy, 0x00a0};
+                ins.regs_.v[0] = 2;
+                ins.regs_.v[0xa] = UINT8_MAX;
+                
+                ins.execute(info);
+                uint8_t expect = (2 + UINT_MAX) & 0x00ff;
+                assert(ins.regs_.v[0] == expect);
+                assert(ins.regs_.v[0xf] == 1);
+
+                ins.regs_.v[1] = 42;
+                info.operand = 0x0010;
+                ins.execute(info);
+                expect += 42;
+                assert(ins.regs_.v[0] = expect);
+                assert(ins.regs_.v[0xf] == 0);
             }
     };
 }

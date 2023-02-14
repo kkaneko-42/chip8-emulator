@@ -136,7 +136,16 @@ void Cpu::ldVxVy(OpeInfo info) {
 void Cpu::orVxVy(OpeInfo info) {}
 void Cpu::andVxVy(OpeInfo info) {}
 void Cpu::xorVxVy(OpeInfo info) {}
-void Cpu::addVxVy(OpeInfo info) {}
+
+void Cpu::addVxVy(OpeInfo info) {
+    uint16_t x_idx = (info.operand >> 8);
+    uint16_t y_idx = (info.operand >> 4) & 0x000f;
+
+    uint16_t res = regs_.v[x_idx] + regs_.v[y_idx];
+    regs_.v[x_idx] = (res & 0x00ff);
+    regs_.v[0xf] = (res > UINT8_MAX) ? 1 : 0;
+}
+
 void Cpu::subVxVy(OpeInfo info) {}
 void Cpu::shrVxVy(OpeInfo info) {}
 void Cpu::subnVxVy(OpeInfo info) {}
