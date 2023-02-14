@@ -168,7 +168,14 @@ void Cpu::addVxVy(OpeInfo info) {
     regs_.v[0xf] = (res > UINT8_MAX) ? 1 : 0;
 }
 
-void Cpu::subVxVy(OpeInfo info) {}
+void Cpu::subVxVy(OpeInfo info) {
+    uint16_t x_idx = (info.operand >> 8);
+    uint16_t y_idx = (info.operand >> 4) & 0x000f;
+
+    regs_.v[0xf] = (regs_.v[x_idx] > regs_.v[y_idx]) ? 1 : 0;
+    regs_.v[x_idx] -= regs_.v[y_idx];
+}
+
 void Cpu::shrVxVy(OpeInfo info) {}
 void Cpu::subnVxVy(OpeInfo info) {}
 void Cpu::shlVxVy(OpeInfo info) {}

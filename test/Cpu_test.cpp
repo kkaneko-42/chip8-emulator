@@ -57,6 +57,7 @@ namespace chip8 {
                 testOrVxVy();
                 testAndVxVy();
                 testXorVxVy();
+                testSubVxVy();
 
                 std::cout << "OK" << std::endl;
             }
@@ -306,7 +307,7 @@ namespace chip8 {
                 ins.regs_.v[0xa] = UINT8_MAX;
                 
                 ins.execute(info);
-                uint8_t expect = (2 + UINT_MAX) & 0x00ff;
+                uint8_t expect = (2 + UINT8_MAX) & 0x00ff;
                 assert(ins.regs_.v[0] == expect);
                 assert(ins.regs_.v[0xf] == 1);
 
@@ -380,6 +381,27 @@ namespace chip8 {
                 ins.regs_.v[1] = b = std::rand();
                 ins.execute(info);
                 assert(ins.regs_.v[0] == (a ^ b));
+            }
+    
+            void testSubVxVy() {
+                TestRam ram;
+                Cpu ins = Cpu(&ram);
+
+                Cpu::OpeInfo info = {Cpu::OpeCode::SUB_Vx_Vy, 0x00a0};
+                ins.regs_.v[0] = 42;
+                ins.regs_.v[0xa] = UINT8_MAX;
+                
+                ins.execute(info);
+                uint8_t expect = (42 - UINT8_MAX) & 0x00ff;
+                assert(ins.regs_.v[0] == expect);
+                assert(ins.regs_.v[0xf] == 0);
+
+                ins.regs_.v[1] = 4;
+                info.operand = 0x0010;
+                ins.execute(info);
+                expect -= 4;
+                assert(ins.regs_.v[0] = expect);
+                assert(ins.regs_.v[0xf] == 1);
             }
     };
 }
