@@ -42,7 +42,7 @@ namespace chip8 {
                 public:
                     virtual ~IDisplay() {}
 
-                    virtual void renderSprite(size_t x, size_t y, const std::vector<unsigned char>& sprite) = 0;
+                    virtual bool renderSprite(size_t x, size_t y, const std::vector<unsigned char>& sprite) = 0;
                     virtual void getResolution(size_t& x, size_t& y) = 0;
             };
 
