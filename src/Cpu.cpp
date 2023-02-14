@@ -202,7 +202,15 @@ void Cpu::subVxVy(OpeInfo info) {
 void Cpu::shrVxVy(OpeInfo info) {}
 void Cpu::subnVxVy(OpeInfo info) {}
 void Cpu::shlVxVy(OpeInfo info) {}
-void Cpu::sneVxVy(OpeInfo info) {}
+
+void Cpu::sneVxVy(OpeInfo info) {
+    uint16_t x_idx = (info.operand >> 8);
+    uint16_t y_idx = (info.operand >> 4) & 0x000f;
+
+    if (regs_.v[x_idx] != regs_.v[y_idx]) {
+        regs_.pc += 2;
+    }
+}
 
 void Cpu::ldIAddr(OpeInfo info) {
     uint16_t addr = (info.operand & 0x0fff);
