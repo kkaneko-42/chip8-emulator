@@ -11,12 +11,16 @@ namespace chip8 {
         public:
             class TestRam : public Cpu::IRandomAccessMemory {
                 public:
-                    std::vector<uint16_t> load(uint16_t addr, size_t n) override {
-                        std::vector<uint16_t> res = {data_.begin() + addr, data_.end()};
+                    TestRam() {
+                        data_.resize(4096);
+                    }
+
+                    std::vector<unsigned char> load(uint16_t addr, size_t n) override {
+                        std::vector<unsigned char> res = {data_.begin() + addr, data_.begin() + addr + n};
                         return res;
                     }
 
-                    void store(uint16_t addr, const std::vector<uint16_t>& data) override {
+                    void store(uint16_t addr, const std::vector<unsigned char>& data) override {
                         for (uint16_t i = 0; i < data.size(); ++i) {
                             data_[i + addr] = data[i];
                         }
@@ -26,11 +30,7 @@ namespace chip8 {
                         return 4096;
                     }
 
-                    TestRam() {
-                        data_.resize(4096);
-                    }
-
-                    std::vector<uint16_t> data_; 
+                    std::vector<unsigned char> data_; 
             };
 
             Cpu_test() {
@@ -55,14 +55,14 @@ namespace chip8 {
 
             void testFetch() {
                 TestRam ram;
-                ram.store(0, {2, 3, 4, 5, 6});
+                ram.store(0, {0xff, 0x66, 0x42, 0x33});
                 Cpu ins = Cpu(&ram);
 
                 uint16_t res = ins.fetch();
-                assert(res == 2 && ins.regs_.pc == 1);
+                assert(res == 0xff66);
                 
                 res = ins.fetch();
-                assert(res == 3 && ins.regs_.pc == 2);
+                assert(res == 0x4233);
             }
 
             void testDecode() {
@@ -245,8 +245,8 @@ namespace chip8 {
 
                 ins.regs_.i = 42;
                 ins.execute(info);
-                for (size_t i = 42; i < 42 + 8; ++i) {
-                    assert(ram.data_[i] == ins.regs_.v[i - 42]);
+                for (size_t i = 0; i < 8; ++i) {
+                    assert(ram.data_[i + ins.regs_.i] == ins.regs_.v[i]);
                 }
             }
     };

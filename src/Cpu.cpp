@@ -65,8 +65,11 @@ void Cpu::consumeClock() {
 }
 
 uint16_t Cpu::fetch() {
-    auto data = ram_->load(regs_.pc++, 1);
-    return data[0];
+    auto data = ram_->load(regs_.pc, 2);
+    uint16_t code = (data[0] << 8) | data[1];
+    regs_.pc += 2;
+
+    return code;
 }
 
 Cpu::OpeInfo Cpu::decode(uint16_t code) {
@@ -173,10 +176,10 @@ void Cpu::ldFVx(OpeInfo info) {}
 void Cpu::ldBVx(OpeInfo info) {}
 
 void Cpu::ldIVx(OpeInfo info) {
-    uint16_t reg_end = (info.operand >> 8);
+    size_t reg_end = (info.operand >> 8);
 
-    std::vector<uint16_t> data(reg_end + 1);
-    for (uint16_t i = 0; i <= reg_end; ++i) {
+    std::vector<unsigned char> data(reg_end + 1);
+    for (size_t i = 0; i <= reg_end; ++i) {
         data[i] = regs_.v[i];
     }
 
