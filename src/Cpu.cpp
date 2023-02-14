@@ -186,4 +186,11 @@ void Cpu::ldIVx(OpeInfo info) {
     ram_->store(regs_.i, data);
 }
 
-void Cpu::ldVxI(OpeInfo info) {}
+void Cpu::ldVxI(OpeInfo info) {
+    size_t reg_end = (info.operand >> 8);
+    auto data = ram_->load(regs_.i, reg_end + 1);
+
+    for (size_t i = 0; i <= reg_end; ++i) {
+        regs_.v[i] = data[i];
+    }
+}

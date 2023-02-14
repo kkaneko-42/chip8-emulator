@@ -49,6 +49,7 @@ namespace chip8 {
                 testLdVxVy();
                 testLdVxByte();
                 testLdIVx();
+                testLdVxI();
 
                 std::cout << "OK" << std::endl;
             }
@@ -247,6 +248,30 @@ namespace chip8 {
                 ins.execute(info);
                 for (size_t i = 0; i < 8; ++i) {
                     assert(ram.data_[i + ins.regs_.i] == ins.regs_.v[i]);
+                }
+            }
+    
+            void testLdVxI() {
+                TestRam ram;
+                Cpu ins = Cpu(&ram);
+
+                for (size_t i = 0; i < 8; ++i) {
+                    ram.data_[i] = static_cast<unsigned char>(std::rand());
+                }
+                Cpu::OpeInfo info = {Cpu::OpeCode::LD_Vx_I, 0x0700};
+                ins.execute(info);
+                for (size_t i = 0; i < 8; ++i) {
+                    assert(ins.regs_.v[i] == ram.data_[i]);
+                }
+
+                for (size_t i = 0; i < 0xa; ++i) {
+                    ram.data_[i + 42] = static_cast<unsigned char>(std::rand());
+                }
+                info.operand = 0x0900;
+                ins.regs_.i = 42;
+                ins.execute(info);
+                for (size_t i = 0; i < 0xa; ++i) {
+                    assert(ins.regs_.v[i] == ram.data_[i + 42]);
                 }
             }
     };
