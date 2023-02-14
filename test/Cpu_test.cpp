@@ -59,6 +59,7 @@ namespace chip8 {
                 testXorVxVy();
                 testSubVxVy();
                 testSeVxByte();
+                testSneVxByte();
 
                 std::cout << "OK" << std::endl;
             }
@@ -415,10 +416,29 @@ namespace chip8 {
                 // dummy
                 ram.data_[4] = 0x42;
                 ram.data_[5] = 0x24;
-                // set value
+                // set compared value
                 ins.regs_.v[0xa] = 0x42;
 
                 // SE Va, 0x42が読まれて、次の命令がスキップされる
+                ins.consumeClock();
+                // したがって、次のfetchではram[4] ram[5]が取れる
+                assert(ins.fetch() == 0x4224);
+            }
+    
+            void testSneVxByte() {
+                TestRam ram;
+                Cpu ins = Cpu(&ram);
+
+                // SNE Va, 0x42
+                ram.data_[0] = 0x4a;
+                ram.data_[1] = 0x42;
+                // dummy
+                ram.data_[4] = 0x42;
+                ram.data_[5] = 0x24;
+                // set compared value
+                ins.regs_.v[0xa] = 0xff;
+
+                // SNE Va, 0x42が読まれて、次の命令がスキップされる
                 ins.consumeClock();
                 // したがって、次のfetchではram[4] ram[5]が取れる
                 assert(ins.fetch() == 0x4224);
