@@ -279,7 +279,16 @@ void Cpu::addIVx(OpeInfo info) {
 }
 
 void Cpu::ldFVx(OpeInfo info) {}
-void Cpu::ldBVx(OpeInfo info) {}
+
+void Cpu::ldBVx(OpeInfo info) {
+    unsigned char value = regs_.v[info.operand >> 8];
+    unsigned char hundreds = value / 100;
+    unsigned char tens = (value / 10) % 10;
+    unsigned char ones = value % 10;
+    std::vector<unsigned char> data = {hundreds, tens, ones};
+
+    ram_->store(regs_.i, data);
+}
 
 void Cpu::ldIVx(OpeInfo info) {
     size_t reg_end = (info.operand >> 8);

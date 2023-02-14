@@ -66,6 +66,7 @@ namespace chip8 {
                 testShrVxVy();
                 testShlVxVy();
                 testSubnVxVy();
+                testLdBVx();
 
                 std::cout << "OK" << std::endl;
             }
@@ -555,6 +556,26 @@ namespace chip8 {
                 ins.execute(info);
                 assert(ins.regs_.v[0] == expect);
                 assert(ins.regs_.v[0xf] == 1);
+            }
+
+            void testLdBVx() {
+                TestRam ram;
+                Cpu ins = Cpu(&ram);
+                Cpu::OpeInfo info = {Cpu::OpeCode::LD_B_Vx, 0x0a00};
+
+                ins.regs_.v[0xa] = 142;
+                ins.regs_.i = 0;
+                ins.execute(info);
+                assert(ram.data_[0] == 1 && ram.data_[1] == 4 && ram.data_[2] == 2);
+
+                ins.regs_.v[0xa] = UINT8_MAX;
+                ins.regs_.i = 42;
+                ins.execute(info);
+                assert(
+                    ram.data_[42] == UINT8_MAX / 100
+                    && ram.data_[43] == (UINT8_MAX / 10) % 10
+                    && ram.data_[44] == UINT8_MAX % 10
+                );
             }
     };
 }
