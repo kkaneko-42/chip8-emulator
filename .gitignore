@@ -5,3 +5,4 @@ chip8
 a.out
 cpu-test
 display-test
+integration-test
