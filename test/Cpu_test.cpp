@@ -63,6 +63,7 @@ namespace chip8 {
                 testSeVxVy();
                 testSneVxVy();
                 testJpV0Addr();
+                testShrVxVy();
 
                 std::cout << "OK" << std::endl;
             }
@@ -495,6 +496,24 @@ namespace chip8 {
                 ins.regs_.v[0] = 0x0024;
                 ins.execute(info);
                 assert(ins.regs_.pc == (0x0024 + 0x0042));
+            }
+    
+            void testShrVxVy() {
+                TestRam ram;
+                Cpu ins = Cpu(&ram);
+                Cpu::OpeInfo info = {Cpu::OpeCode::SHR_Vx_Vy, 0x0a00};
+
+                uint8_t value = 3;
+                ins.regs_.v[0xa] = value;
+                ins.execute(info);
+                assert(ins.regs_.v[0xa] == value / 2);
+                assert(ins.regs_.v[0xf] == 1);
+
+                value = 16;
+                ins.regs_.v[0xa] = value;
+                ins.execute(info);
+                assert(ins.regs_.v[0xa] == value / 2);
+                assert(ins.regs_.v[0xf] == 0);
             }
     };
 }

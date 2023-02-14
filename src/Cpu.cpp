@@ -200,7 +200,13 @@ void Cpu::subVxVy(OpeInfo info) {
     regs_.v[x_idx] -= regs_.v[y_idx];
 }
 
-void Cpu::shrVxVy(OpeInfo info) {}
+void Cpu::shrVxVy(OpeInfo info) {
+    uint16_t x_idx = (info.operand >> 8);
+    
+    regs_.v[0xf] = ((regs_.v[x_idx] & 1) == 1) ? 1 : 0;
+    regs_.v[x_idx] >>= 1;
+}
+
 void Cpu::subnVxVy(OpeInfo info) {}
 void Cpu::shlVxVy(OpeInfo info) {}
 
