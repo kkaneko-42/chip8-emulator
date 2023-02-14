@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <climits>
+#include <unistd.h>
 #include <iostream>
 
 using namespace chip8;
@@ -67,6 +68,7 @@ namespace chip8 {
                 testShlVxVy();
                 testSubnVxVy();
                 testLdBVx();
+                testTimer();
 
                 std::cout << "OK" << std::endl;
             }
@@ -74,7 +76,7 @@ namespace chip8 {
             void testFetch() {
                 TestRam ram;
                 ram.store(0, {0xff, 0x66, 0x42, 0x33});
-                Cpu ins = Cpu(&ram);
+                Cpu ins(&ram, false);
 
                 uint16_t res = ins.fetch();
                 assert(res == 0xff66);
@@ -85,7 +87,7 @@ namespace chip8 {
 
             void testDecode() {
                 TestRam ram;
-                Cpu ins = Cpu(&ram);
+                Cpu ins(&ram, false);
 
                 auto res = ins.decode(0x00e0);
                 assert(res.opecode == Cpu::OpeCode::CLS);
@@ -102,7 +104,7 @@ namespace chip8 {
 
             void testRetCall() {
                 TestRam ram;
-                Cpu ins = Cpu(&ram);
+                Cpu ins(&ram, false);
 
                 Cpu::OpeInfo info = {Cpu::OpeCode::CALL_ADDR, 64};
                 ins.execute(info);
@@ -122,7 +124,7 @@ namespace chip8 {
 
             void testJp() {
                 TestRam ram;
-                Cpu ins = Cpu(&ram);
+                Cpu ins(&ram, false);
 
                 Cpu::OpeInfo info = {Cpu::OpeCode::JP_ADDR, 100};
                 ins.execute(info);
@@ -139,19 +141,19 @@ namespace chip8 {
 
             void testLdVxDt() {
                 TestRam ram;
-                Cpu ins = Cpu(&ram);
+                Cpu ins(&ram, false);
 
-                ins.regs_.delay_timer = 100;
+                ins.setDelayTimer(100);
                 Cpu::OpeInfo info = {Cpu::OpeCode::LD_Vx_DT, 0x0a00};
                 ins.execute(info);
                 assert(ins.regs_.v[0xa] == 100);
 
-                ins.regs_.delay_timer = UINT8_MAX;
+                ins.setDelayTimer(UINT8_MAX);
                 info.operand = 0x0000;
                 ins.execute(info);
                 assert(ins.regs_.v[0x0] == UINT8_MAX);
 
-                ins.regs_.delay_timer = 0;
+                ins.setDelayTimer(0);
                 info.operand = 0x0f00;
                 ins.execute(info);
                 assert(ins.regs_.v[0xf] == 0);
@@ -159,47 +161,47 @@ namespace chip8 {
     
             void testLdDtVx() {
                 TestRam ram;
-                Cpu ins = Cpu(&ram);
+                Cpu ins(&ram, false);
 
                 ins.regs_.v[0xa] = 100;
                 Cpu::OpeInfo info = {Cpu::OpeCode::LD_DT_Vx, 0x0a00};
                 ins.execute(info);
-                assert(ins.regs_.delay_timer == 100);
+                assert(ins.getDelayTimer() == 100);
 
                 ins.regs_.v[0] = UINT8_MAX;
                 info.operand = 0x0000;
                 ins.execute(info);
-                assert(ins.regs_.delay_timer == UINT8_MAX);
+                assert(ins.getDelayTimer() == UINT8_MAX);
 
                 ins.regs_.v[0xf] = 0;
                 info.operand = 0x0f00;
                 ins.execute(info);
-                assert(ins.regs_.delay_timer == 0);
+                assert(ins.getDelayTimer() == 0);
             }
     
             void testLdStVx() {
                 TestRam ram;
-                Cpu ins = Cpu(&ram);
+                Cpu ins(&ram, false);
 
                 ins.regs_.v[0xa] = 100;
                 Cpu::OpeInfo info = {Cpu::OpeCode::LD_ST_Vx, 0x0a00};
                 ins.execute(info);
-                assert(ins.regs_.sound_timer == 100);
+                assert(ins.getSoundTimer() == 100);
 
                 ins.regs_.v[0] = UINT8_MAX;
                 info.operand = 0x0000;
                 ins.execute(info);
-                assert(ins.regs_.sound_timer == UINT8_MAX);
+                assert(ins.getSoundTimer() == UINT8_MAX);
 
                 ins.regs_.v[0xf] = 0;
                 info.operand = 0x0f00;
                 ins.execute(info);
-                assert(ins.regs_.sound_timer == 0);
+                assert(ins.getSoundTimer() == 0);
             }
     
             void testLdIAddr() {
                 TestRam ram;
-                Cpu ins = Cpu(&ram);
+                Cpu ins(&ram, false);
 
                 Cpu::OpeInfo info = {Cpu::OpeCode::LD_I_ADDR, 0x0fff};
                 ins.execute(info);
@@ -216,7 +218,7 @@ namespace chip8 {
     
             void testLdVxVy() {
                 TestRam ram;
-                Cpu ins = Cpu(&ram);
+                Cpu ins(&ram, false);
 
                 ins.regs_.v[0] = 0;
                 ins.regs_.v[0xf] = 42;
@@ -232,7 +234,7 @@ namespace chip8 {
     
             void testLdVxByte() {
                 TestRam ram;
-                Cpu ins = Cpu(&ram);
+                Cpu ins(&ram, false);
 
                 Cpu::OpeInfo info = {Cpu::OpeCode::LD_Vx_BYTE, 0x0a42};
                 ins.execute(info);
@@ -249,7 +251,7 @@ namespace chip8 {
     
             void testLdIVx() {
                 TestRam ram;
-                Cpu ins = Cpu(&ram);
+                Cpu ins(&ram, false);
 
                 for (size_t i = 0; i < 8; ++i) {
                     ins.regs_.v[i] = static_cast<uint8_t>(std::rand());
@@ -270,7 +272,7 @@ namespace chip8 {
     
             void testLdVxI() {
                 TestRam ram;
-                Cpu ins = Cpu(&ram);
+                Cpu ins(&ram, false);
 
                 for (size_t i = 0; i < 8; ++i) {
                     ram.data_[i] = static_cast<unsigned char>(std::rand());
@@ -294,7 +296,7 @@ namespace chip8 {
     
             void testAddIVx() {
                 TestRam ram;
-                Cpu ins = Cpu(&ram);
+                Cpu ins(&ram, false);
 
                 ins.regs_.v[0] = 42;
                 Cpu::OpeInfo info = {Cpu::OpeCode::ADD_I_Vx, 0x0000};
@@ -309,7 +311,7 @@ namespace chip8 {
     
             void testAddVxVy() {
                 TestRam ram;
-                Cpu ins = Cpu(&ram);
+                Cpu ins(&ram, false);
 
                 Cpu::OpeInfo info = {Cpu::OpeCode::ADD_Vx_Vy, 0x00a0};
                 ins.regs_.v[0] = 2;
@@ -330,7 +332,7 @@ namespace chip8 {
     
             void testAddVxByte() {
                 TestRam ram;
-                Cpu ins = Cpu(&ram);
+                Cpu ins(&ram, false);
 
                 Cpu::OpeInfo info = {Cpu::OpeCode::ADD_Vx_BYTE, 0x00ff};
                 ins.execute(info);
@@ -343,7 +345,7 @@ namespace chip8 {
     
             void testOrVxVy() {
                 TestRam ram;
-                Cpu ins = Cpu(&ram);
+                Cpu ins(&ram, false);
                 Cpu::OpeInfo info = {Cpu::OpeCode::OR_Vx_Vy, 0x0010};
                 uint8_t a = std::rand(), b = std::rand();
 
@@ -360,7 +362,7 @@ namespace chip8 {
     
             void testAndVxVy() {
                 TestRam ram;
-                Cpu ins = Cpu(&ram);
+                Cpu ins(&ram, false);
                 Cpu::OpeInfo info = {Cpu::OpeCode::AND_Vx_Vy, 0x0010};
                 uint8_t a = std::rand(), b = std::rand();
 
@@ -377,7 +379,7 @@ namespace chip8 {
     
             void testXorVxVy() {
                 TestRam ram;
-                Cpu ins = Cpu(&ram);
+                Cpu ins(&ram, false);
                 Cpu::OpeInfo info = {Cpu::OpeCode::XOR_Vx_Vy, 0x0010};
                 uint8_t a = std::rand(), b = std::rand();
 
@@ -394,7 +396,7 @@ namespace chip8 {
     
             void testSubVxVy() {
                 TestRam ram;
-                Cpu ins = Cpu(&ram);
+                Cpu ins(&ram, false);
 
                 Cpu::OpeInfo info = {Cpu::OpeCode::SUB_Vx_Vy, 0x00a0};
                 ins.regs_.v[0] = 42;
@@ -415,7 +417,7 @@ namespace chip8 {
     
             void testSeVxByte() {
                 TestRam ram;
-                Cpu ins = Cpu(&ram);
+                Cpu ins(&ram, false);
 
                 // SE Va, 0x42
                 ram.data_[0] = 0x3a;
@@ -434,7 +436,7 @@ namespace chip8 {
     
             void testSneVxByte() {
                 TestRam ram;
-                Cpu ins = Cpu(&ram);
+                Cpu ins(&ram, false);
 
                 // SNE Va, 0x42
                 ram.data_[0] = 0x4a;
@@ -453,7 +455,7 @@ namespace chip8 {
     
             void testSeVxVy() {
                 TestRam ram;
-                Cpu ins = Cpu(&ram);
+                Cpu ins(&ram, false);
 
                 // SE Va, Vb
                 ram.data_[0] = 0x5a;
@@ -473,7 +475,7 @@ namespace chip8 {
     
             void testSneVxVy() {
                 TestRam ram;
-                Cpu ins = Cpu(&ram);
+                Cpu ins(&ram, false);
 
                 // SNE Va, Vb
                 ram.data_[0] = 0x9a;
@@ -493,7 +495,7 @@ namespace chip8 {
     
             void testJpV0Addr() {
                 TestRam ram;
-                Cpu ins = Cpu(&ram);
+                Cpu ins(&ram, false);
                 Cpu::OpeInfo info = {Cpu::OpeCode::JP_V0_ADDR, 0x0042};
 
                 ins.regs_.v[0] = 0x0024;
@@ -503,7 +505,7 @@ namespace chip8 {
     
             void testShrVxVy() {
                 TestRam ram;
-                Cpu ins = Cpu(&ram);
+                Cpu ins(&ram, false);
                 Cpu::OpeInfo info = {Cpu::OpeCode::SHR_Vx_Vy, 0x0a00};
 
                 uint8_t value = 3;
@@ -521,7 +523,7 @@ namespace chip8 {
 
             void testShlVxVy() {
                 TestRam ram;
-                Cpu ins = Cpu(&ram);
+                Cpu ins(&ram, false);
                 Cpu::OpeInfo info = {Cpu::OpeCode::SHL_Vx_Vy, 0x0a00};
 
                 uint8_t value = UINT8_MAX;
@@ -539,7 +541,7 @@ namespace chip8 {
     
             void testSubnVxVy() {
                 TestRam ram;
-                Cpu ins = Cpu(&ram);
+                Cpu ins(&ram, false);
 
                 Cpu::OpeInfo info = {Cpu::OpeCode::SUBN_Vx_Vy, 0x00a0};
                 ins.regs_.v[0] = UINT8_MAX;
@@ -560,7 +562,7 @@ namespace chip8 {
 
             void testLdBVx() {
                 TestRam ram;
-                Cpu ins = Cpu(&ram);
+                Cpu ins(&ram, false);
                 Cpu::OpeInfo info = {Cpu::OpeCode::LD_B_Vx, 0x0a00};
 
                 ins.regs_.v[0xa] = 142;
@@ -576,6 +578,19 @@ namespace chip8 {
                     && ram.data_[43] == (UINT8_MAX / 10) % 10
                     && ram.data_[44] == UINT8_MAX % 10
                 );
+            }
+
+            void testTimer() {
+                TestRam ram;
+                Cpu ins(&ram, true);
+
+                ins.setDelayTimer(3);
+                ins.setSoundTimer(5);
+                while (ins.getSoundTimer() != 0) {
+                    std::cout << "dt: " << +ins.getDelayTimer() << std::endl;
+                    std::cout << "st: " << +ins.getSoundTimer() << std::endl;
+                    sleep(1);
+                }
             }
     };
 }

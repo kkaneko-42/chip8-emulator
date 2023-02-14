@@ -2,6 +2,8 @@
 #include <stdexcept>
 #include <iostream>
 #include <random>
+#include <thread>
+#include <chrono>
 
 using namespace chip8;
 
@@ -46,8 +48,17 @@ const std::map<Cpu::OpeCode, Cpu::Operation> Cpu::kOperationMap = {
     {LD_Vx_I, &Cpu::ldVxI}
 };
 
-Cpu::Cpu(IRandomAccessMemory* ram) {
+Cpu::Cpu(IRandomAccessMemory* ram, bool timerOn) {
     setRam(ram);
+
+    if (timerOn) {
+        std::thread timer_decrementer(
+            decrementTimer,
+            std::ref(regs_.delay_timer), std::ref(regs_.sound_timer),
+            std::ref(dt_mtx_), std::ref(st_mtx_)
+        );
+        timer_decrementer.detach();
+    }
 }
 
 Cpu::Cpu(IRandomAccessMemory* ram, IDisplay* display) {
@@ -304,7 +315,7 @@ void Cpu::ldVxK(OpeInfo info) {}
 
 void Cpu::ldDtVx(OpeInfo info) {
     uint16_t reg_idx = (info.operand >> 8);
-    regs_.delay_timer = regs_.v[reg_idx];
+    setDelayTimer(regs_.v[reg_idx]);
 }
 
 void Cpu::ldStVx(OpeInfo info) {
@@ -346,5 +357,53 @@ void Cpu::ldVxI(OpeInfo info) {
 
     for (size_t i = 0; i <= reg_end; ++i) {
         regs_.v[i] = data[i];
+    }
+}
+
+void Cpu::setDelayTimer(uint8_t value) {
+    std::lock_guard<std::mutex> lk(dt_mtx_);
+    regs_.delay_timer = value;
+}
+
+void Cpu::setSoundTimer(uint8_t value) {
+    std::lock_guard<std::mutex> lk(st_mtx_);
+    regs_.sound_timer = value;
+}
+
+uint8_t Cpu::getDelayTimer() {
+    std::lock_guard<std::mutex> lk(dt_mtx_);
+    return regs_.delay_timer;
+}
+
+uint8_t Cpu::getSoundTimer() {
+    std::lock_guard<std::mutex> lk(st_mtx_);
+    return regs_.sound_timer;
+}
+
+void Cpu::decrementTimer(
+    uint8_t& delay_timer,
+    uint8_t& sound_timer,
+    std::mutex& dt_mtx,
+    std::mutex& st_mtx)
+{
+    while (true) {
+        // 1秒間待機
+        // NOTE: ホスト側の初期化とデータ競合しないため、まず待機
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        
+        {
+            // delay timerのdecrement
+            std::lock_guard<std::mutex> lk(dt_mtx);
+            if (delay_timer != 0) {
+                --delay_timer;
+            }
+        }
+        {
+            // sound timerのdecrement
+            std::lock_guard<std::mutex> lk(st_mtx);
+            if (sound_timer != 0) {
+                --sound_timer;
+            }
+        }
     }
 }

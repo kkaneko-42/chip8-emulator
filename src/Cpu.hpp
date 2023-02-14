@@ -1,5 +1,6 @@
 #pragma once
 
+#include <mutex>
 #include <vector>
 #include <map>
 #include <cstdint>
@@ -92,7 +93,7 @@ namespace chip8 {
                 LD_Vx_I             = 0xf065,
             };
 
-            Cpu(IRandomAccessMemory* ram);
+            Cpu(IRandomAccessMemory* ram, bool timerOn = true);
             Cpu(IRandomAccessMemory* ram, IDisplay* display);
             void run();
             void consumeClock();
@@ -150,9 +151,24 @@ namespace chip8 {
             void ldIVx(OpeInfo info);
             void ldVxI(OpeInfo info);
 
+            void setDelayTimer(uint8_t value);
+            void setSoundTimer(uint8_t value);
+            uint8_t getDelayTimer();
+            uint8_t getSoundTimer();
+            static void decrementTimer(
+                uint8_t& delay_timer,
+                uint8_t& sound_timer,
+                std::mutex& dt_mtx,
+                std::mutex& st_mtx
+            );
+
             static const std::map<OpeCode, Operation> kOperationMap;
             IRandomAccessMemory* ram_;
             IDisplay* display_;
             Registers regs_;
+            // delay timer mutex
+            std::mutex dt_mtx_;
+            // sound timer mutex
+            std::mutex st_mtx_;
     };
 }
