@@ -217,7 +217,11 @@ void Cpu::ldIAddr(OpeInfo info) {
     regs_.i = addr;
 }
 
-void Cpu::jpV0Addr(OpeInfo info) {}
+void Cpu::jpV0Addr(OpeInfo info) {
+    uint16_t addr = (info.operand & 0x0fff);
+    regs_.pc = regs_.v[0] + addr;
+}
+
 void Cpu::rndVxByte(OpeInfo info) {}
 void Cpu::drwVxVyNibble(OpeInfo info) {}
 void Cpu::skpVx(OpeInfo info) {}

@@ -62,6 +62,7 @@ namespace chip8 {
                 testSneVxByte();
                 testSeVxVy();
                 testSneVxVy();
+                testJpV0Addr();
 
                 std::cout << "OK" << std::endl;
             }
@@ -484,6 +485,16 @@ namespace chip8 {
                 ins.consumeClock();
                 // したがって、次のfetchではram[4] ram[5]が取れる
                 assert(ins.fetch() == 0x4224);
+            }
+    
+            void testJpV0Addr() {
+                TestRam ram;
+                Cpu ins = Cpu(&ram);
+                Cpu::OpeInfo info = {Cpu::OpeCode::JP_V0_ADDR, 0x0042};
+
+                ins.regs_.v[0] = 0x0024;
+                ins.execute(info);
+                assert(ins.regs_.pc == (0x0024 + 0x0042));
             }
     };
 }
