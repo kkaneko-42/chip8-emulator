@@ -14,7 +14,6 @@ TerminalDisplay::~TerminalDisplay() {
     endwin();
 }
 
-#include <iostream>
 bool TerminalDisplay::renderSprite(size_t x, size_t y, const std::vector<unsigned char>& sprite) {
     bool collision = false;
 
@@ -36,8 +35,6 @@ void TerminalDisplay::clear() {
     erase();
     refresh();
 }
-
-#include <iostream>
 
 void TerminalDisplay::render() {
     for (size_t y = 0; y < HEIGHT; ++y) {
