@@ -480,7 +480,7 @@ namespace chip8 {
                 ins.regs_.v[0xa] = 0x42;
                 ins.regs_.v[0xb] = 0xff;
 
-                // SE Va, Vbが読まれて、次の命令がスキップされる
+                // SNE Va, Vbが読まれて、次の命令がスキップされる
                 ins.consumeClock();
                 // したがって、次のfetchではram[4] ram[5]が取れる
                 assert(ins.fetch() == 0x4224);
