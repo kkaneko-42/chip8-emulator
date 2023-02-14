@@ -1,6 +1,7 @@
 #include "Cpu.hpp"
 #include <stdexcept>
 #include <iostream>
+#include <random>
 
 using namespace chip8;
 
@@ -222,7 +223,14 @@ void Cpu::jpV0Addr(OpeInfo info) {
     regs_.pc = regs_.v[0] + addr;
 }
 
-void Cpu::rndVxByte(OpeInfo info) {}
+void Cpu::rndVxByte(OpeInfo info) {
+    uint16_t reg_idx = (info.operand >> 8);
+    uint16_t imm = (info.operand & 0x00ff);
+    std::random_device rnd;
+
+    regs_.v[reg_idx] = (rnd() & imm);
+}
+
 void Cpu::drwVxVyNibble(OpeInfo info) {}
 void Cpu::skpVx(OpeInfo info) {}
 void Cpu::sknpVx(OpeInfo info) {}
