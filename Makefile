@@ -15,7 +15,7 @@ cpu-test: $(SRCS_DIR)/Cpu.cpp $(TESTS_DIR)/Cpu_test.cpp
 timer-test: $(SRCS_DIR)/Cpu.cpp $(TESTS_DIR)/Cpu_test.cpp
 	$(CXX) -fsanitize=thread -D TEST $^ -o $@ && ./$@
 
-integration-test: Cpu.cpp TerminalDisplay.cpp IntegrationTester.cpp
+integration-test: Cpu.cpp TerminalDisplay.cpp Ram.cpp IntegrationTester.cpp
 	$(CXX) $(CXXFLAGS) -D TEST $^ -lncurses -o $@ && ./$@
 
 fclean:

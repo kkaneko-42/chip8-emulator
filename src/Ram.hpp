@@ -5,6 +5,10 @@
 namespace chip8 {
     class Ram : public Cpu::IRandomAccessMemory {
         public:
+            #ifdef TEST
+            friend class IntegrationTester;
+            #endif
+
             Ram();
             std::vector<unsigned char> load(uint16_t addr, size_t n) override;
             void store(uint16_t addr, const std::vector<unsigned char>& data) override;
