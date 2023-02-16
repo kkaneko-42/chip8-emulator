@@ -49,6 +49,8 @@ const std::map<Cpu::OpeCode, Cpu::Operation> Cpu::kOperationMap = {
     {LD_Vx_I, &Cpu::ldVxI}
 };
 
+#ifdef TEST
+// テスト用コンストラクター
 Cpu::Cpu(IRandomAccessMemory* ram, bool timerOn) {
     setRam(ram);
 
@@ -66,6 +68,8 @@ Cpu::Cpu(IRandomAccessMemory* ram, IDisplay* display) {
     setRam(ram);
     setDisplay(display);
 }
+// テスト用コンストラクター終わり
+#endif
 
 Cpu::Cpu(IRandomAccessMemory* ram, IDisplay* display, IKeyboard* keyboard) {
     setRam(ram);
@@ -188,7 +192,7 @@ void Cpu::execute(OpeInfo info) {
 }
 
 void Cpu::sysAddr(OpeInfo info) {
-    throw std::runtime_error("SYS addr is not implemented");
+    regs_.pc = (info.operand & 0x0fff);
 }
 
 void Cpu::cls(OpeInfo info) {
