@@ -1,8 +1,12 @@
+NAME		:= chip8
 CXX			:= c++
 CXXFLAGS	:= -fsanitize=address -fsanitize=undefined -g #-Wall -Wextra -Werror
 SRCS_DIR	:= src
 TESTS_DIR	:= test
 VPATH		:= $(SRCS_DIR):$(TESTS_DIR)
+
+$(NAME): main.cpp Cpu.cpp Ram.cpp TerminalDisplay.cpp Keyboard.cpp
+	$(CXX) $(CXXFLAGS) -D TEST $^ -lncurses -o $@
 
 test-all: display-test cpu-test timer-test keyboard-test integration-test
 
@@ -21,7 +25,7 @@ keyboard-test: Keyboard.cpp Keyboard_test.cpp
 integration-test: Cpu.cpp Ram.cpp TerminalDisplay.cpp IntegrationTester.cpp
 	$(CXX) $(CXXFLAGS) -D TEST $^ -lncurses -o $@ && ./$@
 
-fclean:
-	rm -f cpu-test display-test integration-test timer-test keyboard-test
+clean:
+	rm -f $(NAME) cpu-test display-test integration-test timer-test keyboard-test
 
-.PHONY: fclean
+.PHONY: clean
