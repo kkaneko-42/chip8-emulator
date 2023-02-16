@@ -137,6 +137,7 @@ namespace chip8 {
 
             static const size_t kRequireRamSize;
             static const size_t kRequireDisplayWidth, kRequireDisplayHeight;
+            static const size_t kFontHeight;
 
         private:
             struct OpeInfo {
@@ -186,7 +187,7 @@ namespace chip8 {
             void ldIVx(OpeInfo info);
             void ldVxI(OpeInfo info);
 
-            void importSpritesPreset();
+            void importFontset();
             void setDelayTimer(uint8_t value);
             void setSoundTimer(uint8_t value);
             uint8_t getDelayTimer();

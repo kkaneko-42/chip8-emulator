@@ -10,6 +10,7 @@ using namespace chip8;
 const size_t Cpu::kRequireRamSize = 4096;
 const size_t Cpu::kRequireDisplayWidth = 64;
 const size_t Cpu::kRequireDisplayHeight = 32;
+const size_t Cpu::kFontHeight = 5;
 const std::map<Cpu::OpeCode, Cpu::Operation> Cpu::kOperationMap = {
     {SYS_ADDR, &Cpu::sysAddr},
     {CLS, &Cpu::cls},
@@ -104,7 +105,7 @@ void Cpu::setKeyboard(IKeyboard* keyboard) {
 }
 
 void Cpu::init() {
-    importSpritesPreset();
+    importFontset();
 
     // start timer thread
     std::thread timer_decrementer(
@@ -115,9 +116,7 @@ void Cpu::init() {
     timer_decrementer.detach();
 }
 
-void Cpu::importSpritesPreset() {
-    const size_t kSpriteHeight = 5;
-    // NOTE: spriteの横幅はCHAR_BIT(8bit)と決まっている
+void Cpu::importFontset() {
     const std::vector<unsigned char> kPresets = {
         0xf0, 0x90, 0x90, 0x90, 0xf0, // 0
         0x20, 0x60, 0x20, 0x20, 0x70, // 1
@@ -140,9 +139,9 @@ void Cpu::importSpritesPreset() {
     size_t ram_addr = 0;
     auto sprite_begin = kPresets.begin();
     while (sprite_begin < kPresets.end()) {
-        ram_->store(ram_addr, {sprite_begin, sprite_begin + kSpriteHeight});
-        ram_addr += kSpriteHeight;
-        sprite_begin += kSpriteHeight;
+        ram_->store(ram_addr, {sprite_begin, sprite_begin + kFontHeight});
+        ram_addr += kFontHeight;
+        sprite_begin += kFontHeight;
     }
 }
 
@@ -360,15 +359,34 @@ void Cpu::drwVxVyNibble(OpeInfo info) {
     regs_.v[0xf] = (collision) ? 1 : 0;
 }
 
-void Cpu::skpVx(OpeInfo info) {}
-void Cpu::sknpVx(OpeInfo info) {}
+void Cpu::skpVx(OpeInfo info) {
+    KeyCode keycode = static_cast<KeyCode>(info.operand >> 8);
+    if (keyboard_->isPressing(keycode)) {
+        regs_.pc += 2;
+    }
+}
+
+void Cpu::sknpVx(OpeInfo info) {
+    KeyCode keycode = static_cast<KeyCode>(info.operand >> 8);
+    if (!keyboard_->isPressing(keycode)) {
+        regs_.pc += 2;
+    }
+}
 
 void Cpu::ldVxDt(OpeInfo info) {
     uint16_t reg_idx = (info.operand >> 8);
     regs_.v[reg_idx] = regs_.delay_timer;
 }
 
-void Cpu::ldVxK(OpeInfo info) {}
+void Cpu::ldVxK(OpeInfo info) {
+    uint16_t reg_idx = (info.operand >> 8);
+    KeyCode keycode = KEY_INVALID;
+
+    while (keycode == KEY_INVALID) {
+        keycode = keyboard_->acquireKey();
+    }
+    regs_.v[reg_idx] = static_cast<uint8_t>(keycode);
+}
 
 void Cpu::ldDtVx(OpeInfo info) {
     uint16_t reg_idx = (info.operand >> 8);
@@ -385,7 +403,12 @@ void Cpu::addIVx(OpeInfo info) {
     regs_.i = regs_.v[reg_idx];
 }
 
-void Cpu::ldFVx(OpeInfo info) {}
+void Cpu::ldFVx(OpeInfo info) {
+    uint16_t reg_idx = (info.operand >> 8);
+    uint8_t sprite_num = regs_.v[reg_idx];
+    std::vector<unsigned char> font = ram_->load(sprite_num * kFontHeight, kFontHeight);
+    ram_->store(regs_.i, font);
+}
 
 void Cpu::ldBVx(OpeInfo info) {
     unsigned char value = regs_.v[info.operand >> 8];
