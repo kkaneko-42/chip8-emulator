@@ -116,6 +116,7 @@ namespace chip8 {
                     virtual ~IKeyboard() {}
 
                     virtual bool isPressing(KeyCode keycode) = 0;
+                    virtual KeyCode acquireKey() = 0;
             };
 
             Cpu(IRandomAccessMemory* ram);
