@@ -122,12 +122,14 @@ namespace chip8 {
             };
 
             Cpu(IRandomAccessMemory* ram, bool timerOn = true);
-            // Cpu(IRandomAccessMemory* ram);
             Cpu(IRandomAccessMemory* ram, IDisplay* display);
+            Cpu(IRandomAccessMemory* ram, IDisplay* display, IKeyboard* keyboard);
+
             void run();
             void consumeClock();
             void setRam(IRandomAccessMemory* ram);
             void setDisplay(IDisplay* display);
+            void setKeyboard(IKeyboard* keybaord);
 
             static const size_t kRequireRamSize;
             static const size_t kRequireDisplayWidth, kRequireDisplayHeight;
@@ -194,6 +196,7 @@ namespace chip8 {
             static const std::map<OpeCode, Operation> kOperationMap;
             IRandomAccessMemory* ram_;
             IDisplay* display_;
+            IKeyboard* keyboard_;
             Registers regs_;
             // delay timer mutex
             std::mutex dt_mtx_;

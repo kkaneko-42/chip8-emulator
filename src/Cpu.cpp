@@ -66,6 +66,12 @@ Cpu::Cpu(IRandomAccessMemory* ram, IDisplay* display) {
     setDisplay(display);
 }
 
+Cpu::Cpu(IRandomAccessMemory* ram, IDisplay* display, IKeyboard* keyboard) {
+    setRam(ram);
+    setDisplay(display);
+    setKeyboard(keyboard);
+}
+
 void Cpu::setRam(IRandomAccessMemory* ram) {
     if (ram == nullptr) {
         throw std::runtime_error("RAM is null");
@@ -87,6 +93,14 @@ void Cpu::setDisplay(IDisplay* display) {
     }
 
     display_ = display;
+}
+
+void Cpu::setKeyboard(IKeyboard* keyboard) {
+    if (keyboard == nullptr) {
+        throw std::runtime_error("keyboard is null");
+    }
+
+    keyboard_ = keyboard;
 }
 
 void Cpu::run() {
