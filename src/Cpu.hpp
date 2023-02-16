@@ -75,7 +75,7 @@ namespace chip8 {
             };
 
             enum KeyCode {
-                KEY_INVALID,
+                KEY_INVALID = -1,
                 KEY_0 = 0,
                 KEY_1,
                 KEY_2,

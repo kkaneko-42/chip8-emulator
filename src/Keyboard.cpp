@@ -23,6 +23,14 @@ const std::map<Cpu::KeyCode, char> Keyboard::kKeycodeMap = {
     {Cpu::KeyCode::KEY_F, 'v'}
 };
 
+Keyboard::Keyboard() {
+    initscr();
+}
+
+Keyboard::~Keyboard() {
+    endwin();
+}
+
 // 極めて短い間入力を受け付け、指定された入力があればtrue, なければfalseを返す
 bool Keyboard::isPressing(Cpu::KeyCode keycode) {
     const int kInputDelay = 1; // milliseconds

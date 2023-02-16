@@ -6,6 +6,8 @@
 namespace chip8 {
     class Keyboard : public Cpu::IKeyboard {
         public:
+            Keyboard();
+            ~Keyboard();
             bool isPressing(Cpu::KeyCode keycode) override;
             Cpu::KeyCode acquireKey() override;
             

@@ -13,7 +13,7 @@ cpu-test: Cpu.cpp Cpu_test.cpp
 	$(CXX) $(CXXFLAGS) -D TEST $^ -o $@ && ./$@
 
 keyboard-test: Keyboard.cpp Keyboard_test.cpp
-	$(CXX) $(CXXFLAGS) -D TEST $^ -o $@ && ./$@
+	$(CXX) $(CXXFLAGS) -D TEST $^ -lncurses -o $@ && ./$@
 
 integration-test: Cpu.cpp TerminalDisplay.cpp IntegrationTester.cpp
 	$(CXX) $(CXXFLAGS) -D TEST $^ -lncurses -o $@ && ./$@
