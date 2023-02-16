@@ -140,7 +140,7 @@ void Cpu::importSpritesPreset() {
     size_t ram_addr = 0;
     auto sprite_begin = kPresets.begin();
     while (sprite_begin < kPresets.end()) {
-        ram_.store(ram_addr, {sprite_begin, sprite_begin + kSpriteHeight});
+        ram_->store(ram_addr, {sprite_begin, sprite_begin + kSpriteHeight});
         ram_addr += kSpriteHeight;
         sprite_begin += kSpriteHeight;
     }
