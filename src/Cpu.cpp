@@ -103,6 +103,49 @@ void Cpu::setKeyboard(IKeyboard* keyboard) {
     keyboard_ = keyboard;
 }
 
+void Cpu::init() {
+    importSpritesPreset();
+
+    // start timer thread
+    std::thread timer_decrementer(
+        decrementTimer,
+        std::ref(regs_.delay_timer), std::ref(regs_.sound_timer),
+        std::ref(dt_mtx_), std::ref(st_mtx_)
+    );
+    timer_decrementer.detach();
+}
+
+void Cpu::importSpritesPreset() {
+    const size_t kSpriteHeight = 5;
+    // NOTE: spriteの横幅はCHAR_BIT(8bit)と決まっている
+    const std::vector<unsigned char> kPresets = {
+        0xf0, 0x90, 0x90, 0x90, 0xf0, // 0
+        0x20, 0x60, 0x20, 0x20, 0x70, // 1
+        0xf0, 0x10, 0xf0, 0x80, 0xf0, // 2
+        0xf0, 0x10, 0xf0, 0x10, 0xf0, // 3
+        0x90, 0x90, 0xf0, 0x10, 0x10, // 4
+        0xf0, 0x80, 0xf0, 0x10, 0xf0, // 5
+        0xf0, 0x80, 0xf0, 0x90, 0xf0, // 6
+        0xf0, 0x10, 0x20, 0x40, 0x40, // 7
+        0xf0, 0x90, 0xf0, 0x90, 0xf0, // 8
+        0xf0, 0x90, 0xf0, 0x10, 0xf0, // 9
+        0xf0, 0x90, 0xf0, 0x90, 0x90, // a
+        0xe0, 0x90, 0xe0, 0x90, 0xe0, // b
+        0xf0, 0x80, 0x80, 0x80, 0xf0, // c
+        0xe0, 0x90, 0x90, 0x90, 0xe0, // d
+        0xf0, 0x80, 0xf0, 0x80, 0xf0, // e
+        0xf0, 0x80, 0xf0, 0x80, 0x80  // f
+    };
+
+    size_t ram_addr = 0;
+    auto sprite_begin = kPresets.begin();
+    while (sprite_begin < kPresets.end()) {
+        ram_.store(ram_addr, {sprite_begin, sprite_begin + kSpriteHeight});
+        ram_addr += kSpriteHeight;
+        sprite_begin += kSpriteHeight;
+    }
+}
+
 void Cpu::run() {
     while (true) {
         consumeClock();

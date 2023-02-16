@@ -121,10 +121,14 @@ namespace chip8 {
                     virtual KeyCode acquireKey() = 0;
             };
 
+            #ifdef TEST
+            // テスト用コンストラクタ
             Cpu(IRandomAccessMemory* ram, bool timerOn = true);
             Cpu(IRandomAccessMemory* ram, IDisplay* display);
+            #endif
             Cpu(IRandomAccessMemory* ram, IDisplay* display, IKeyboard* keyboard);
 
+            void init();
             void run();
             void consumeClock();
             void setRam(IRandomAccessMemory* ram);
@@ -182,6 +186,7 @@ namespace chip8 {
             void ldIVx(OpeInfo info);
             void ldVxI(OpeInfo info);
 
+            void importSpritesPreset();
             void setDelayTimer(uint8_t value);
             void setSoundTimer(uint8_t value);
             uint8_t getDelayTimer();
