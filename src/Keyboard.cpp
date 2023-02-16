@@ -1,13 +1,10 @@
 #include "Keyboard.hpp"
-#include <fcntl.h>
-#include <cstdio>
-#include <termios.h>
-#include <unistd.h>
-#include <iostream>
+#include <ncurses.h>
 
 using namespace chip8;
 
 const std::map<Cpu::KeyCode, char> Keyboard::kKeycodeMap = {
+    {Cpu::KeyCode::KEY_INVALID, EOF},
     {Cpu::KeyCode::KEY_0, 'x'},
     {Cpu::KeyCode::KEY_1, '1'},
     {Cpu::KeyCode::KEY_2, '2'},
@@ -26,21 +23,28 @@ const std::map<Cpu::KeyCode, char> Keyboard::kKeycodeMap = {
     {Cpu::KeyCode::KEY_F, 'v'}
 };
 
-Keyboard::Keyboard() {
-    struct termios save_settings;
-    struct termios settings;
+// 極めて短い間入力を受け付け、指定された入力があればtrue, なければfalseを返す
+bool Keyboard::isPressing(Cpu::KeyCode keycode) {
+    const int kInputDelay = 1; // milliseconds
+    const char kMappedKeycode = kKeycodeMap.find(keycode)->second;
 
-    tcgetattr(STDIN_FILENO, &save_settings);
-    settings = save_settings;
-    settings.c_lflag &= ~(ECHO | ICANON);
-    tcsetattr(STDIN_FILENO, TCSANOW, &settings);
-    fcntl(STDIN_FILENO, F_SETFL, O_NONBLOCK);
+    timeout(kInputDelay);
+    char c = getch();
+    
+    return (c == kMappedKeycode);
 }
 
-bool Keyboard::isPressing(Cpu::KeyCode keycode) {
-    char c = getchar();
-    fflush(stdin);
+Cpu::KeyCode Keyboard::acquireKey() {
+    char c = getch();
+    
+    // 取得したcがkKeycodeMapに含まれるか？
+    for (const auto& kv : kKeycodeMap) {
+        char mapped_keycode = kv.second;
+        if (c == mapped_keycode) {
+            return kv.first;
+        }
+    }
 
-    std::cout << "c: " << c << std::endl;
-    return c == kKeycodeMap.find(keycode)->second;
+    // 入力が不正
+    return Cpu::KeyCode::KEY_INVALID;
 }
