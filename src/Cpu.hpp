@@ -95,6 +95,14 @@ namespace chip8 {
                 KEY_F,
             };
 
+            enum LogLevel {
+                FATAL,
+                ERROR,
+                WARNING,
+                INFO,
+                DEBUG,
+            };
+
             class IRandomAccessMemory {
                 public:
                     virtual ~IRandomAccessMemory() {}
@@ -125,7 +133,7 @@ namespace chip8 {
                 public:
                     virtual ~ILogger() {}
 
-                    void log(int level, const std::string& msg);
+                    void log(LogLevel level, const std::string& msg);
             };
 
             #ifdef TEST
