@@ -38,7 +38,7 @@ int main(int ac, char** av) {
     try {
         importCode(ram, av[1]);
         cpu.init();
-        cpu.consumeClock();
+        cpu.run();
     } catch (const std::exception& e) {
         std::cerr << e.what() << std::endl;
         return 1;

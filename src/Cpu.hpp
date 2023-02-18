@@ -159,6 +159,8 @@ namespace chip8 {
             struct OpeInfo {
                 OpeCode opecode;
                 uint16_t operand;
+
+                std::string toString();
             };
 
             typedef void (Cpu::*Operation)(OpeInfo);

@@ -1,6 +1,7 @@
 #include "Cpu.hpp"
 #include <stdexcept>
 #include <iostream>
+#include <sstream>
 #include <random>
 #include <thread>
 #include <chrono>
@@ -48,6 +49,14 @@ const std::map<Cpu::OpeCode, Cpu::Operation> Cpu::kOperationMap = {
     {LD_I_Vx, &Cpu::ldIVx},
     {LD_Vx_I, &Cpu::ldVxI}
 };
+
+std::string Cpu::OpeInfo::toString() {
+    std::stringstream ss;
+
+    ss << std::hex << "{opecode: " << opecode << ", ";
+    ss << std::hex << "operand: " << operand << "}";
+    return ss.str();
+}
 
 #ifdef TEST
 // テスト用コンストラクター
@@ -169,10 +178,12 @@ void Cpu::run() {
 
 void Cpu::consumeClock() {
     uint16_t code = fetch();
-    logger_->log(DEBUG, "fetch code: " + std::to_string(code));
+    std::stringstream ss;
+    ss << std::hex << code;
+    logger_->log(DEBUG, "fetch code: " + ss.str());
 
     auto ope_info = decode(code);
-    logger_->log(DEBUG, "decode: {opecode: " + std::to_string(ope_info.opecode) + ", operand: " + std::to_string(ope_info.operand) + "}");
+    logger_->log(DEBUG, "decode: " + ope_info.toString());
     
     execute(ope_info);
     logger_->log(DEBUG, "execution completed.");
