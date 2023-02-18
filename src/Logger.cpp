@@ -12,5 +12,5 @@ Logger::Logger() {
 }
 
 void Logger::log(Cpu::LogLevel level, const std::string& msg) {
-
+    logfile_ << msg << "\n";
 }
