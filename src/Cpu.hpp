@@ -154,6 +154,7 @@ namespace chip8 {
             static const size_t kRequireRamSize;
             static const size_t kRequireDisplayWidth, kRequireDisplayHeight;
             static const size_t kFontHeight;
+            static const size_t kProgramSpaceOffset;
 
         private:
             struct OpeInfo {

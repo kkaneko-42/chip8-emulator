@@ -12,6 +12,7 @@ const size_t Cpu::kRequireRamSize = 4096;
 const size_t Cpu::kRequireDisplayWidth = 64;
 const size_t Cpu::kRequireDisplayHeight = 32;
 const size_t Cpu::kFontHeight = 5;
+const size_t Cpu::kProgramSpaceOffset = 0x200;
 const std::map<Cpu::OpeCode, Cpu::Operation> Cpu::kOperationMap = {
     {SYS_ADDR, &Cpu::sysAddr},
     {CLS, &Cpu::cls},
@@ -136,7 +137,6 @@ void Cpu::init() {
         std::ref(dt_mtx_), std::ref(st_mtx_)
     );
     timer_decrementer.detach();
-    regs_.pc += 0x200; // FIXME: magic number
 
     #ifndef TEST
     logger_->log(DEBUG, "Initialization completed.");
@@ -198,7 +198,7 @@ void Cpu::consumeClock() {
 }
 
 uint16_t Cpu::fetch() {
-    auto data = ram_->load(regs_.pc, 2);
+    auto data = ram_->load(regs_.pc + kProgramSpaceOffset, 2);
     uint16_t code = (data[0] << 8) | data[1];
     regs_.pc += 2;
 
@@ -228,7 +228,7 @@ void Cpu::execute(OpeInfo info) {
 }
 
 void Cpu::sysAddr(OpeInfo info) {
-    regs_.pc = (info.operand & 0x0fff) + 0x200;
+    regs_.pc = (info.operand & 0x0fff);
 }
 
 void Cpu::cls(OpeInfo info) {

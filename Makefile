@@ -9,7 +9,7 @@ $(NAME): main.o Cpu.o Ram.o TerminalDisplay.o Keyboard.o Logger.o
 	$(CXX) $(CXXFLAGS) $^ -lncurses -o $@
 
 %.o: %.cpp
-	$(CXX) $(CXXFLAGS) -c $^ -lncurses
+	$(CXX) $(CXXFLAGS) -D TEST -c $^ -lncurses
 
 test: display-test cpu-test keyboard-test integration-test
 

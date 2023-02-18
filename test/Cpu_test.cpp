@@ -109,7 +109,7 @@ namespace chip8 {
 
             void testFetch() {
                 TestRam ram;
-                ram.store(0, {0xff, 0x66, 0x42, 0x33});
+                ram.store(Cpu::kProgramSpaceOffset, {0xff, 0x66, 0x42, 0x33});
                 Cpu ins(&ram, false);
 
                 uint16_t res = ins.fetch();
@@ -454,11 +454,11 @@ namespace chip8 {
                 Cpu ins(&ram, false);
 
                 // SE Va, 0x42
-                ram.data_[0] = 0x3a;
-                ram.data_[1] = 0x42;
+                ram.data_[0 + Cpu::kProgramSpaceOffset] = 0x3a;
+                ram.data_[1 + Cpu::kProgramSpaceOffset] = 0x42;
                 // dummy
-                ram.data_[4] = 0x42;
-                ram.data_[5] = 0x24;
+                ram.data_[4 + Cpu::kProgramSpaceOffset] = 0x42;
+                ram.data_[5 + Cpu::kProgramSpaceOffset] = 0x24;
                 // set compared value
                 ins.regs_.v[0xa] = 0x42;
 
@@ -473,11 +473,11 @@ namespace chip8 {
                 Cpu ins(&ram, false);
 
                 // SNE Va, 0x42
-                ram.data_[0] = 0x4a;
-                ram.data_[1] = 0x42;
+                ram.data_[0 + Cpu::kProgramSpaceOffset] = 0x4a;
+                ram.data_[1 + Cpu::kProgramSpaceOffset] = 0x42;
                 // dummy
-                ram.data_[4] = 0x42;
-                ram.data_[5] = 0x24;
+                ram.data_[4 + Cpu::kProgramSpaceOffset] = 0x42;
+                ram.data_[5 + Cpu::kProgramSpaceOffset] = 0x24;
                 // set compared value
                 ins.regs_.v[0xa] = 0xff;
 
@@ -492,11 +492,11 @@ namespace chip8 {
                 Cpu ins(&ram, false);
 
                 // SE Va, Vb
-                ram.data_[0] = 0x5a;
-                ram.data_[1] = 0xb0;
+                ram.data_[0 + Cpu::kProgramSpaceOffset] = 0x5a;
+                ram.data_[1 + Cpu::kProgramSpaceOffset] = 0xb0;
                 // dummy
-                ram.data_[4] = 0x42;
-                ram.data_[5] = 0x24;
+                ram.data_[4 + Cpu::kProgramSpaceOffset] = 0x42;
+                ram.data_[5 + Cpu::kProgramSpaceOffset] = 0x24;
                 // set compared value
                 ins.regs_.v[0xa] = 0x42;
                 ins.regs_.v[0xb] = 0x42;
@@ -512,11 +512,11 @@ namespace chip8 {
                 Cpu ins(&ram, false);
 
                 // SNE Va, Vb
-                ram.data_[0] = 0x9a;
-                ram.data_[1] = 0xb0;
+                ram.data_[0 + Cpu::kProgramSpaceOffset] = 0x9a;
+                ram.data_[1 + Cpu::kProgramSpaceOffset] = 0xb0;
                 // dummy
-                ram.data_[4] = 0x42;
-                ram.data_[5] = 0x24;
+                ram.data_[4 + Cpu::kProgramSpaceOffset] = 0x42;
+                ram.data_[5 + Cpu::kProgramSpaceOffset] = 0x24;
                 // set compared value
                 ins.regs_.v[0xa] = 0x42;
                 ins.regs_.v[0xb] = 0xff;

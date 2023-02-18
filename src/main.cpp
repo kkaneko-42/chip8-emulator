@@ -19,8 +19,7 @@ static void importCode(Ram& ram, const char* filename) {
 
     std::string code;
     ifs >> code;
-    // FIXME: magic number
-    ram.store(0x200, {code.begin(), code.end()});
+    ram.store(Cpu::kProgramSpaceOffset, {code.begin(), code.end()});
 }
 
 int main(int ac, char** av) {
