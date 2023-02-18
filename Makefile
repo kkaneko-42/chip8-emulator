@@ -5,27 +5,27 @@ SRCS_DIR	:= src
 TESTS_DIR	:= test
 VPATH		:= $(SRCS_DIR):$(TESTS_DIR)
 
-$(NAME): main.cpp Cpu.cpp Ram.cpp TerminalDisplay.cpp Keyboard.cpp Logger.cpp
+$(NAME): main.o Cpu.o Ram.o TerminalDisplay.o Keyboard.o Logger.o
 	$(CXX) $(CXXFLAGS) $^ -lncurses -o $@
 
-test-all: display-test cpu-test timer-test keyboard-test integration-test
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c $^ -lncurses
 
-display-test: TerminalDisplay.cpp Display_test.cpp
+test: display-test cpu-test keyboard-test integration-test
+
+display-test: TerminalDisplay.o Display_test.o
 	$(CXX) $(CXXFLAGS) -D TEST $^ -lncurses -o $@ && ./$@
 
-cpu-test: Cpu.cpp Cpu_test.cpp
+cpu-test: Cpu.o Cpu_test.o
 	$(CXX) $(CXXFLAGS) -D TEST $^ -o $@ && ./$@
 
-timer-test: $(SRCS_DIR)/Cpu.cpp $(TESTS_DIR)/Cpu_test.cpp
-	$(CXX) -pthread -D TEST $^ -o $@ && ./$@
-
-keyboard-test: Keyboard.cpp Keyboard_test.cpp
+keyboard-test: Keyboard.o Keyboard_test.o
 	$(CXX) $(CXXFLAGS) -D TEST $^ -lncurses -o $@ && ./$@
 
-integration-test: Cpu.cpp Ram.cpp TerminalDisplay.cpp IntegrationTester.cpp
+integration-test: Cpu.o Ram.o TerminalDisplay.o IntegrationTester.o
 	$(CXX) $(CXXFLAGS) -D TEST $^ -lncurses -o $@ && ./$@
 
 clean:
-	rm -f $(NAME) cpu-test display-test integration-test timer-test keyboard-test
+	rm -f *.o */*.o $(NAME) cpu-test display-test integration-test timer-test keyboard-test
 
 .PHONY: clean
