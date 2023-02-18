@@ -9,3 +9,4 @@ integration-test
 timer-test
 keyboard-test
 roms/
+*.log
