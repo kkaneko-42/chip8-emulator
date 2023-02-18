@@ -2,6 +2,7 @@
 #include "Ram.hpp"
 #include "TerminalDisplay.hpp"
 #include "Keyboard.hpp"
+#include "Logger.hpp"
 #include <iostream>
 #include <cstring>
 #define USAGE "./chip8 <code to run>"
@@ -24,7 +25,8 @@ int main(int ac, char** av) {
     Ram ram;
     TerminalDisplay display;
     Keyboard keyboard;
-    Cpu cpu(&ram, &display, &keyboard);
+    Logger logger;
+    Cpu cpu(&ram, &display, &keyboard, &logger);
 
     importCode(ram, av[1]);
     cpu.init();

@@ -133,7 +133,7 @@ namespace chip8 {
                 public:
                     virtual ~ILogger() {}
 
-                    void log(LogLevel level, const std::string& msg);
+                    virtual void log(LogLevel level, const std::string& msg) = 0;
             };
 
             #ifdef TEST
@@ -141,7 +141,7 @@ namespace chip8 {
             Cpu(IRandomAccessMemory* ram, bool timerOn = true);
             Cpu(IRandomAccessMemory* ram, IDisplay* display);
             #endif
-            Cpu(IRandomAccessMemory* ram, IDisplay* display, IKeyboard* keyboard);
+            Cpu(IRandomAccessMemory* ram, IDisplay* display, IKeyboard* keyboard, ILogger* logger);
 
             void init();
             void run();
@@ -149,6 +149,7 @@ namespace chip8 {
             void setRam(IRandomAccessMemory* ram);
             void setDisplay(IDisplay* display);
             void setKeyboard(IKeyboard* keybaord);
+            void setLogger(ILogger *logger);
 
             static const size_t kRequireRamSize;
             static const size_t kRequireDisplayWidth, kRequireDisplayHeight;
@@ -218,6 +219,7 @@ namespace chip8 {
             IRandomAccessMemory* ram_;
             IDisplay* display_;
             IKeyboard* keyboard_;
+            ILogger* logger_;
             Registers regs_;
             // delay timer mutex
             std::mutex dt_mtx_;

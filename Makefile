@@ -5,7 +5,7 @@ SRCS_DIR	:= src
 TESTS_DIR	:= test
 VPATH		:= $(SRCS_DIR):$(TESTS_DIR)
 
-$(NAME): main.cpp Cpu.cpp Ram.cpp TerminalDisplay.cpp Keyboard.cpp
+$(NAME): main.cpp Cpu.cpp Ram.cpp TerminalDisplay.cpp Keyboard.cpp Logger.cpp
 	$(CXX) $(CXXFLAGS) $^ -lncurses -o $@
 
 test-all: display-test cpu-test timer-test keyboard-test integration-test

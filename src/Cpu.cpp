@@ -71,10 +71,11 @@ Cpu::Cpu(IRandomAccessMemory* ram, IDisplay* display) {
 // テスト用コンストラクター終わり
 #endif
 
-Cpu::Cpu(IRandomAccessMemory* ram, IDisplay* display, IKeyboard* keyboard) {
+Cpu::Cpu(IRandomAccessMemory* ram, IDisplay* display, IKeyboard* keyboard, ILogger* logger) {
     setRam(ram);
     setDisplay(display);
     setKeyboard(keyboard);
+    setLogger(logger);
 }
 
 void Cpu::setRam(IRandomAccessMemory* ram) {
@@ -106,6 +107,14 @@ void Cpu::setKeyboard(IKeyboard* keyboard) {
     }
 
     keyboard_ = keyboard;
+}
+
+void Cpu::setLogger(ILogger* logger) {
+    if (logger == nullptr) {
+        throw std::runtime_error("logger is null");
+    }
+
+    logger_ = logger;
 }
 
 void Cpu::init() {
