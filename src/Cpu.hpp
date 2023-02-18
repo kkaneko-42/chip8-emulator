@@ -169,6 +169,7 @@ namespace chip8 {
             uint16_t fetch();
             OpeInfo decode(uint16_t code);
             void execute(OpeInfo info);
+            void log(LogLevel level, const std::string& msg);
 
             void sysAddr(OpeInfo info);
             void cls(OpeInfo info);

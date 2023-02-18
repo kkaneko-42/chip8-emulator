@@ -120,10 +120,6 @@ void Cpu::setKeyboard(IKeyboard* keyboard) {
 }
 
 void Cpu::setLogger(ILogger* logger) {
-    if (logger == nullptr) {
-        throw std::runtime_error("logger is null");
-    }
-
     logger_ = logger;
 }
 
@@ -138,9 +134,7 @@ void Cpu::init() {
     );
     timer_decrementer.detach();
 
-    #ifndef TEST
-    logger_->log(DEBUG, "Initialization completed.");
-    #endif
+    log(DEBUG, "Initialization completed.");
 }
 
 void Cpu::importFontset() {
@@ -180,21 +174,21 @@ void Cpu::run() {
 
 void Cpu::consumeClock() {
     uint16_t code = fetch();
-    #ifndef TEST
     std::stringstream ss;
     ss << std::hex << code;
-    logger_->log(DEBUG, "fetch code: " + ss.str());
-    #endif
+    log(DEBUG, "fetch code: " + ss.str());
 
     auto ope_info = decode(code);
-    #ifndef TEST
-    logger_->log(DEBUG, "decode: " + ope_info.toString());
-    #endif
+    log(DEBUG, "decode: " + ope_info.toString());
     
     execute(ope_info);
-    #ifndef TEST
-    logger_->log(DEBUG, "execution completed.");
-    #endif
+    log(DEBUG, "execution completed.");
+}
+
+void Cpu::log(LogLevel level, const std::string& msg) {
+    if (logger_ != nullptr) {
+        logger_->log(level, msg);
+    }
 }
 
 uint16_t Cpu::fetch() {
