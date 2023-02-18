@@ -127,6 +127,9 @@ void Cpu::init() {
         std::ref(dt_mtx_), std::ref(st_mtx_)
     );
     timer_decrementer.detach();
+    regs_.pc += 0x200; // FIXME: magic number
+
+    logger_->log(DEBUG, "Initialization completed.");
 }
 
 void Cpu::importFontset() {
@@ -166,8 +169,13 @@ void Cpu::run() {
 
 void Cpu::consumeClock() {
     uint16_t code = fetch();
+    logger_->log(DEBUG, "fetch code: " + std::to_string(code));
+
     auto ope_info = decode(code);
+    logger_->log(DEBUG, "decode: {opecode: " + std::to_string(ope_info.opecode) + ", operand: " + std::to_string(ope_info.operand) + "}");
+    
     execute(ope_info);
+    logger_->log(DEBUG, "execution completed.");
 }
 
 uint16_t Cpu::fetch() {

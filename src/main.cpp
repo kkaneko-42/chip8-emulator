@@ -4,16 +4,23 @@
 #include "Keyboard.hpp"
 #include "Logger.hpp"
 #include <iostream>
+#include <fstream>
 #include <cstring>
-#define USAGE "./chip8 <code to run>"
+#define USAGE "./chip8 <filename>"
 
 using namespace chip8;
 
 // NOTE: codeはnull終端を仮定
-static void importCode(Ram& ram, const char* code) {
-    std::string code_str(code);
+static void importCode(Ram& ram, const char* filename) {
+    std::ifstream ifs(filename, std::ios::in);
+    if (!ifs) {
+        throw std::runtime_error("failed to open file");
+    }
+
+    std::string code;
+    ifs >> code;
     // FIXME: magic number
-    ram.store(0x200, {code_str.begin(), code_str.end()});
+    ram.store(0x200, {code.begin(), code.end()});
 }
 
 int main(int ac, char** av) {
@@ -28,8 +35,14 @@ int main(int ac, char** av) {
     Logger logger;
     Cpu cpu(&ram, &display, &keyboard, &logger);
 
-    importCode(ram, av[1]);
-    cpu.init();
-    cpu.run();
+    try {
+        importCode(ram, av[1]);
+        cpu.init();
+        cpu.consumeClock();
+    } catch (const std::exception& e) {
+        std::cerr << e.what() << std::endl;
+        return 1;
+    }
+    
     return 0;
 }

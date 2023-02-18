@@ -2,10 +2,10 @@
 
 using namespace chip8;
 
-const std::string Logger::kLogfilePath = "/var/log/chip8.log";
+const std::string Logger::kLogfilePath = "./chip8.log";
 
 Logger::Logger() {
-    logfile_.open(kLogfilePath, std::ios::out);
+    logfile_.open(kLogfilePath, std::ios::app);
     if (!logfile_) {
         throw std::runtime_error("failed to open logfile");
     }
