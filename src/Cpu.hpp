@@ -121,6 +121,13 @@ namespace chip8 {
                     virtual KeyCode acquireKey() = 0;
             };
 
+            class ILogger {
+                public:
+                    virtual ~ILogger() {}
+
+                    void log(int level, const std::string& msg);
+            };
+
             #ifdef TEST
             // テスト用コンストラクタ
             Cpu(IRandomAccessMemory* ram, bool timerOn = true);
